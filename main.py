@@ -8,6 +8,23 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///oghbs.db'
 db = SQLAlchemy(app)
 
+curuserd = -1
+checkindate = datetime.now()
+checkoutdate = datetime.now()
+srt = '0'
+foodid = '0'
+availableonly = '0'
+roomid = 0
+rooms = []
+avail = []
+days = []
+urls = []
+roomAvail = []
+emptystatus = ""
+for i in range(40):
+    emptystatus+="0"
+
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(30))
@@ -172,6 +189,13 @@ def details():
     
     return jsonify(results="done")
 
+@app.route('/', methods=["POST", "GET"])
+def hello_world():
+    
+    return render_template('index.html', flag=3)
 
-if __name=='__main_':
-    app.run(debug=True)
+
+
+if __name__ == '__main__':
+    app.run(debug = True)
+
