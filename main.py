@@ -191,8 +191,28 @@ def details():
 
 @app.route('/', methods=["POST", "GET"])
 def hello_world():
-    
+    if request.method == "POST":
+        print(request.form['username'])
+        user = User.query.filter_by(username=request.form['username']).first()
+        print(request.form['password'])
+        if user is not None and user.password == request.form['password']:
+            global currentuserid
+            currentuserid = user.id
+            if user.id == 0:
+                return admin()
+            else:
+                auth = Authentication.query.filter_by(id=user.id).first()
+                print(auth.val)
+                if auth.val != 1:
+                    return render_template('index.html', flag=auth.val)
+                return render_template('calender.html')
+        else:
+            return render_template('index.html', flag=1)
     return render_template('index.html', flag=3)
+
+
+
+      
 
 
 
