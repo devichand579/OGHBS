@@ -204,15 +204,12 @@ def hello_world():
                 auth = Authentication.query.filter_by(id=user.id).first()
                 print(auth.val)
                 if auth.val != 1:
-                    return render_template('index.html', flag=auth.val)
-                return render_template('calender.html')
+                    return render_template('/template.index.html')
+                return render_template('/template.calender.html')
         else:
-            return render_template('index.html', flag=1)
-    return render_template('index.html', flag=3)
+            return render_template('/template.index.html')
+    return render_template('/template.index.html')
 
-
-
-      
 
 
 
