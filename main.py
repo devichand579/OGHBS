@@ -171,3 +171,7 @@ def details():
     print(json)
     
     return jsonify(results="done")
+
+
+if __name=='__main_':
+    app.run(debug=True)
