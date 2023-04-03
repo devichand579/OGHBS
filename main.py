@@ -1,6 +1,7 @@
 from flask import Flask, render_template, Response, jsonify, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
+from mail import send_mail
 
 app = Flask(__name__)
 app.config['SECRET_KEY']='KGPGH@123'
