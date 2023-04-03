@@ -31,14 +31,15 @@ class User(db.Model):
     first_name = db.Column(db.String(30))
     last_name = db.Column(db.String(30))
     email = db.Column(db.String(50))
-    username = db.Column(db.String(20),unique=True)
+    username = db.Column(db.String(50),unique=True)
     password = db.Column(db.String(20))
-    address = db.Column(db.String(100))
+    address = db.Column(db.String(200))
     age = db.Column(db.Integer)
     gender = db.Column(db.String(20))
-    rollstd=db.Column(db.String(20),nullable=True,unique=True)
-    usertype = db.Column(db.String(20))
-    image_file=db.Column(db.String(20),nullable=False,default='Default.jpg')
+    rollstd = db.Column(db.String(20),nullable=True,unique=True)
+    usertype = db.Column(db.String(50))
+    #image_file=db.Column(db.String(50),nullable=False)
+    #doc=db.Column(db.String(50),nullable=False)
     def __repr__(self):
         return '<Name %r>' % self.id
 
@@ -213,6 +214,8 @@ def welcome():
             return render_template('index.html',flag=1)
     return render_template('index.html',flag=-1)
 
+
+
 @app.route('/signup', methods=["POST", "GET"])
 def sign_up():
     if request.method == "POST":
@@ -222,24 +225,22 @@ def sign_up():
         first_name= request.form['first_name']
         last_name= request.form['last_name']
         email = request.form['email']
-        address = request.form['address1']+", "+request.form['address2']+", City "+request.form['city']+", State "+request.form['state']        
+        address = request.form['address1']+", "+request.form['address2']+", City : "+request.form['city']+", State :"+request.form['state']        
         gender = request.form['gender']            
         age = request.form['age']     
         roll_Std = request.form['roll']
+        #image_file = request.form['image']
+        #doc = request.form['doc']
         usertype = request.form['role']
+            
         
         checkusername = User.query.filter_by(username=request.form['username']).first()
         checkemail = User.query.filter_by(username=request.form['email']).first()
         if checkusername is None and checkemail is None:
-            newUser = User(id=new_id, first_name=name,last_name=name, email=email, username=username, password=password, address=address, age=age, gender=gender, rollStd=rollStd,usertype=usertype)
-            otp=send_mail("OTP for registration","Please enter the otp for succeesful registration", email)
-            num=request.form['OTP']
-            if num!=otp:
-                return render_template('regform.html', flag=3)
-            else:
-               newAuthReq = Authentication(id=newid, val=0)
-               db.session.add(newAuthReq)
-               db.session.commit()
+            newUser = User(id=new_id, first_name=first_name,last_name=last_name, email=email, username=username, password=password, address=address, age=age, gender=gender, rollstd=roll_Std, usertype=usertype)
+            newAuthReq = Authentication(id=new_id, val=0)
+            db.session.add(newAuthReq)
+            db.session.commit()
         elif checkemail is not None:
             return render_template('regform.html', flag=2)
         else:
@@ -249,10 +250,24 @@ def sign_up():
             db.session.add(newUser)
             db.session.commit()
             print("User added successfully")
-            return redirect('/')
+            return redirect('/otp')
         except:
             print("Could not add new user to the database")
     return render_template('regform.html', flag=1)
+
+@app.route('/otp', methods=['POST','GET'])
+def check():
+    if request.method =="POST":
+        i=User.query.count()
+        user=User.query.filter_by(id=i).first()
+        otp=send_mail("OTP for registration","Enter the otp for verification",user.email)
+        if otp==request.form['otp']:
+            return redirect('/',flag=3)
+        else:
+            return render_template('otp.html',flag=1)
+    return render_template('otp.html',flag=0)
+
+    
 
 @app.route('/admin', methods=["POST", "GET"])
 def admin():

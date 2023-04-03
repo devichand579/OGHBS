@@ -33,6 +33,8 @@
             <span class="error">Username taken !!</span>
         {% elif flag == 2 %}
             <span class="error">Email taken !!</span>
+        {% elif flag == 3 %}
+            <span class="error">otp is incorrect !!</span>
         {% endif %}
       </div>
       <div class="row clearfix">
@@ -93,16 +95,18 @@
               </div>
             </div>
               <div class="input_field"> <span><i aria-hidden="true" class="fa fa-envelope"></i></span>
-              <input type="text" name="roll" placeholder="Roll No. of related student" />
+              <input type="text" name="roll" placeholder="your id (User/admin)" />
               </div>
             <div class="input_field">
-  <div class="fileText">Upload Identification Document</div>
-            <input type="file" id="myFile" name="filename">
+  <div class="fileText">Upload your document for verification</div>
+            <input type="file" id="myFile" name="doc">
+            </div>
+  <div class="fileText">Upload your image</div>
+            <input type="file" id="myFile" name="image">
             </div>
             <div class="input_field ">
               <label for="role">Select role :</label>
               <select name = "role">
-                
                 <option value = "Admin">Admin</option>
                 <option value = "User">User</option>
               </select>
