@@ -1,7 +1,7 @@
 from flask import Flask, render_template, Response, jsonify, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
-from mail import send_mail
+from mail import send_mail ,send_confirmation_mail,send_payment_confirmation_mail
 
 app = Flask(__name__)
 app.config['SECRET_KEY']='KGPGH@123'
@@ -201,7 +201,7 @@ def welcome():
         if user is not None and user.password == request.form['password']:
             global currentuserid
             currentuserid = user.id
-            if user.id == 0:
+            if user.usertype =="Admin":
                 return admin()
             else:
                 auth = Authentication.query.filter_by(id=user.id).first()
@@ -211,7 +211,7 @@ def welcome():
                 return render_template('calender.html')
         else:
             return render_template('index.html',flag=1)
-    return render_template('index.html',flag=2)
+    return render_template('index.html',flag=-1)
 
 @app.route('/signup', methods=["POST", "GET"])
 def sign_up():
@@ -232,9 +232,14 @@ def sign_up():
         checkemail = User.query.filter_by(username=request.form['email']).first()
         if checkusername is None and checkemail is None:
             newUser = User(id=new_id, first_name=name,last_name=name, email=email, username=username, password=password, address=address, age=age, gender=gender, rollStd=rollStd,usertype=usertype)
-            newAuthReq = Authentication(id=newid, val=0)
-            db.session.add(newAuthReq)
-            db.session.commit()
+            otp=send_mail("OTP for registration","Please enter the otp for succeesful registration", email)
+            num=request.form['OTP']
+            if num!=otp:
+                return render_template('regform.html', flag=3)
+            else:
+               newAuthReq = Authentication(id=newid, val=0)
+               db.session.add(newAuthReq)
+               db.session.commit()
         elif checkemail is not None:
             return render_template('regform.html', flag=2)
         else:
@@ -249,6 +254,36 @@ def sign_up():
             print("Could not add new user to the database")
     return render_template('regform.html', flag=1)
 
+@app.route('/admin', methods=["POST", "GET"])
+def admin():
+    authRequests = []
+    requests = Authentication.query.filter_by(val=0)
+    for req in requests:
+        authRequests.append(User.query.filter_by(id=req.id).first())
+    return render_template('admin.html', users=authRequests)
+
+
+@app.route('/adminDates', methods=["POST", "GET"])
+def adminDates():
+    return render_template('adminCalendar.html')
+
+@app.route('/adminHistory', methods=["POST", "GET"])
+def adminHistory():
+    bookings = Booking.query.all()
+    rooms = [Rooms.query.filter_by(id=i.roomId).first() for i in bookings]
+    user = [User.query.filter_by(id=i.userId).first() for i in bookings]
+    cost = [TotalBookingCost(i) for i in bookings]
+    return render_template('adminPrevBooking.html', bookings=bookings, user=user, rooms=rooms, prices=cost)
+
+
+@app.route('/authorize/<userId>/<desc>', methods=["POST", "GET"])
+def authorize(userId, desc):
+    userId = int(userId)
+    desc = int(desc)
+    userVal = Authentication.query.filter_by(id=userId).first()
+    userVal.val = desc
+    db.session.commit()
+    return admin()
 
 if __name__ == '__main__':
     app.run(debug = True)
