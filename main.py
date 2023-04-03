@@ -28,8 +28,8 @@ for i in range(40):
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(30))
-    last_name = db.Column(db.String(30))
+    firstname = db.Column(db.String(30))
+    lastname = db.Column(db.String(30))
     email = db.Column(db.String(50))
     username = db.Column(db.String(50),unique=True)
     password = db.Column(db.String(20))
@@ -38,8 +38,8 @@ class User(db.Model):
     gender = db.Column(db.String(20))
     rollstd = db.Column(db.String(20),nullable=True,unique=True)
     usertype = db.Column(db.String(50))
-    #image_file=db.Column(db.String(50),nullable=False)
-    #doc=db.Column(db.String(50),nullable=False)
+    imagefile=db.Column(db.String(50),nullable=False)
+    doc=db.Column(db.String(50),nullable=False)
     def __repr__(self):
         return '<Name %r>' % self.id
 
@@ -115,6 +115,8 @@ class Upi(db.Model):
     id=db.Column(db.Integer,primary_key=True)
     upiid=db.Column(db.String(20))
     amountu=db.Column(db.Float,db.ForeignKey('payment.amount'))
+
+
     
 def checkAvailable(room):
     global checkindate,checkoutdate
@@ -123,7 +125,7 @@ def checkAvailable(room):
     j=checkoutdate.day-datetime.now().day
     checkoutindex=j
     if checkinindex <0 or checkoutindex<0:
-        return false
+        return False
     for x in room.status[checkinindex:checkoutindex+1]:
         if x=='1':
             return False
@@ -131,7 +133,7 @@ def checkAvailable(room):
 
 def totalbookingcost(booked):
     room = Rooms.query.filter_by(id=booked.roomid).first()
-    food = Foodoptions.query.filter_by(id=booked.foodid).first()
+    food = FoodOptions.query.filter_by(id=booked.foodid).first()
     amenities=Amenities.query.filter_by(id=booked.amenid).first()
     dur=((booked.checkoutdate.day-booked.checkoutdate.day)+1)
     diff=booked.checkindate.day-datetime.now().day
@@ -185,6 +187,10 @@ if app.config["DEBUG"]:
         response.headers["Expires"]=0
         response.headers["pragma"]="no-cache"
         return response
+
+@app.before_first_request
+def create_tables():
+     db.create_all()
     
 @app.route('/details', methods=['POST'])
 def details():
@@ -219,26 +225,26 @@ def welcome():
 @app.route('/signup', methods=["POST", "GET"])
 def sign_up():
     if request.method == "POST":
-        new_id = User.query.count()+1
+        newid = User.query.count()+1
         username = request.form['username']
         password = request.form['password']
-        first_name= request.form['first_name']
-        last_name= request.form['last_name']
+        firstname= request.form['first_name']
+        lastname= request.form['last_name']
         email = request.form['email']
         address = request.form['address1']+", "+request.form['address2']+", City : "+request.form['city']+", State :"+request.form['state']        
         gender = request.form['gender']            
         age = request.form['age']     
-        roll_Std = request.form['roll']
-        #image_file = request.form['image']
-        #doc = request.form['doc']
+        rollStd = request.form['roll']
+        imagefile = request.form['image']
+        doc = request.form['doc']
         usertype = request.form['role']
             
         
         checkusername = User.query.filter_by(username=request.form['username']).first()
         checkemail = User.query.filter_by(username=request.form['email']).first()
         if checkusername is None and checkemail is None:
-            newUser = User(id=new_id, first_name=first_name,last_name=last_name, email=email, username=username, password=password, address=address, age=age, gender=gender, rollstd=roll_Std, usertype=usertype)
-            newAuthReq = Authentication(id=new_id, val=0)
+            newUser = User(id=newid, firstname=firstname,lastname=lastname, email=email, username=username, password=password, address=address, age=age, gender=gender, rollstd=rollStd, usertype=usertype, imagefile=imagefile, doc=doc)
+            newAuthReq = Authentication(id=newid, val=0)
             db.session.add(newAuthReq)
             db.session.commit()
         elif checkemail is not None:
@@ -264,7 +270,8 @@ def check():
         if otp==request.form['otp']:
             return redirect('/',flag=3)
         else:
-            return render_template('otp.html',flag=1)
+            db.session.delete(user)
+            return redirect('/')
     return render_template('otp.html',flag=0)
 
     
@@ -287,7 +294,7 @@ def adminHistory():
     bookings = Booking.query.all()
     rooms = [Rooms.query.filter_by(id=i.roomId).first() for i in bookings]
     user = [User.query.filter_by(id=i.userId).first() for i in bookings]
-    cost = [TotalBookingCost(i) for i in bookings]
+    cost = [totalbookingcost(i) for i in bookings]
     return render_template('adminPrevBooking.html', bookings=bookings, user=user, rooms=rooms, prices=cost)
 
 
