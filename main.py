@@ -36,6 +36,7 @@ class User(db.Model):
     age = db.Column(db.Integer)
     gender = db.Column(db.String(20))
     rollstd=db.Column(db.String(20),nullable=True,unique=True)
+    usertype = db.Column(db.String(20))
     image_file=db.Column(db.String(20),nullable=False,default='Default.jpg')
     def __repr__(self):
         return '<Name %r>' % self.id
@@ -90,27 +91,28 @@ class Authentication(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     val = db.Column(db.Integer)
 
-class payment(db.Model):
+class Payment(db.Model):
     id=db.Column(db.Integer,primary_key=True)
     amount=db.Column(db.Float)
     paymentid=db.Column(db.String(20))
 
-class cash(db.Model):
+class Cash(db.Model):
     id=db.Column(db.Integer,primary_key=True)
     currency=db.Column(db.String(20))
-    amountc= db.relationship('payment', backref='cash', lazy=True, uselist=False)
+    amountc=db.Column(db.Float,db.ForeignKey('payment.amount'))
 
-class creditcard(db.Model):
+class Creditcard(db.Model):
     id=db.Column(db.Integer,primary_key=True)
     name=db.Column(db.String(30))
     cardno=db.Column(db.String(20))
     cvv=db.Column(db.Integer)
-    amountcc=db.relationship('payment', backref='creditcard', lazy=True, uselist=False)
+    amountcc=db.Column(db.Float,db.ForeignKey('payment.amount'))
+   
 
-class upi(db.Model):
+class Upi(db.Model):
     id=db.Column(db.Integer,primary_key=True)
     upiid=db.Column(db.String(20))
-    amountu=db.relationship('payment', backref='upi', lazy=True, uselist=False)
+    amountu=db.Column(db.Float,db.ForeignKey('payment.amount'))
     
 def checkAvailable(room):
     global checkindate,checkoutdate
@@ -190,7 +192,7 @@ def details():
     return jsonify(results="done")
 
 @app.route('/', methods=["POST", "GET"])
-def hello_world():
+def welcome():
     if request.method == "POST":
         print(request.form['username'])
         user = User.query.filter_by(username=request.form['username']).first()
@@ -204,13 +206,47 @@ def hello_world():
                 auth = Authentication.query.filter_by(id=user.id).first()
                 print(auth.val)
                 if auth.val != 1:
-                    return render_template('/template.index.html')
-                return render_template('/template.calender.html')
+                    return render_template('index.html',flag=auth.val)
+                return render_template('calender.html')
         else:
-            return render_template('/template.index.html')
-    return render_template('/template.index.html')
+            return render_template('index.html',flag=1)
+    return render_template('index.html',flag=2)
 
-
+@app.route('/signup', methods=["POST", "GET"])
+def sign_up():
+    if request.method == "POST":
+        new_id = User.query.count()+1
+        username = request.form['username']
+        password = request.form['password']
+        first_name= request.form['first_name']
+        last_name= request.form['last_name']
+        email = request.form['email']
+        address = request.form['address1']+", "+request.form['address2']+", City "+request.form['city']+", State "+request.form['state']        
+        gender = request.form['gender']            
+        age = request.form['age']     
+        roll_Std = request.form['roll']
+        usertype = request.form['role']
+        
+        checkusername = User.query.filter_by(username=request.form['username']).first()
+        checkemail = User.query.filter_by(username=request.form['email']).first()
+        if checkusername is None and checkemail is None:
+            newUser = User(id=new_id, first_name=name,last_name=name, email=email, username=username, password=password, address=address, age=age, gender=gender, rollStd=rollStd,usertype=usertype)
+            newAuthReq = Authentication(id=newid, val=0)
+            db.session.add(newAuthReq)
+            db.session.commit()
+        elif checkemail is not None:
+            return render_template('regform.html', flag=2)
+        else:
+            return render_template('regform.html', flag=0)
+        # push to db
+        try:
+            db.session.add(newUser)
+            db.session.commit()
+            print("User added successfully")
+            return redirect('/')
+        except:
+            print("Could not add new user to the database")
+    return render_template('regform.html', flag=1)
 
 
 if __name__ == '__main__':
