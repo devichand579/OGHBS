@@ -17,14 +17,8 @@
 
 body {
 		font-family: "DM Sans", sans-serif;
-	background-color:  #d2d6d9 ;
+	background-color:  #000000 ;
 	line-height: 1.5;
-	/*min-height: 300vh;*/
-	/*position: relative;*/
-	/*display: flex;*/
-	/*justify-content: center;*/
-	/*align-items: center;*/
-	/*flex-direction: column;*/
 	height: 130vh;
 	margin: 0 ;
 }
@@ -50,12 +44,6 @@ span {
 	font-size: 12px;
 }
 
-/*a {*/
-/*	color: #333;*/
-/*	font-size: 14px;*/
-/*	text-decoration: none;*/
-/*	margin: 15px 0;*/
-/*}*/
 
 .responsive-wrapper {
 	width: 90%;
@@ -77,7 +65,7 @@ span {
 	align-items: center;
 	color: white;
 	/* Other */
-	background-color:  rgb(248, 66, 66);;
+	background-color:  #4692e3;
 	box-shadow: 0 2px 10px 0 rgba(0,0,0, 0.1);
 }
 
@@ -96,7 +84,7 @@ span {
 /* Styling of other elements */
 .header-logo img {
 	display: block;
-	height: calc(var(--header-inner-height) - 30px);
+	height: calc(var(--header-inner-height) - 20px);
 }
 
 .header-navigation {
@@ -156,7 +144,7 @@ span {
 }
 * {margin:0;padding:0}
 .checkin{
-  border: 1px rgb(255, 48, 48);
+  border: 1px #4692e3;
     text-align: center;
     padding: 0 2rem;
 }
@@ -175,7 +163,7 @@ span {
     font-weight: bold;
     justify-content: space-evenly;
     padding: 1rem 0;
-    background: linear-gradient(to right, rgb(248, 66, 66),rgb(248, 66, 66));;
+    background: linear-gradient(to right, #4692e3,#4692e3);;
 }
 .checkout{
   border: 1px black;
@@ -193,7 +181,7 @@ span {
 }
 
 .searchButton {
-  color: rgb(248, 66, 66);
+  color: #4692e3;
     height: 4em;
     padding: 0 1.5rem;
   background-color: white;
@@ -229,7 +217,7 @@ span {
 .nav{
     width:100%;
     /*margin:auto;*/
-background-color:rgb(255, 120, 66)
+background-color:r#4692e3
 }
 .nav ul {
   display: flex;
@@ -244,9 +232,9 @@ background-color:rgb(255, 120, 66)
  .nav li {
   flex: 1;
   border-style: solid;
-  border-color: rgb(255, 87, 87);
+  border-color: #4692e3;
   height: 65px;
-  background:rgb(255, 118, 118) ;
+  background:#4692e3 ;
 }
 
 .nav a {
