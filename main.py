@@ -9,7 +9,7 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///oghbs.db'
 db = SQLAlchemy(app)
 
-curuserd = -1
+curuserid = -1
 checkindate = datetime.now()
 checkoutdate = datetime.now()
 srt = '0'
@@ -262,9 +262,10 @@ def welcome():
         user = User.query.filter_by(username=request.form['username']).first()
         print(request.form['password'])
         if user is not None and user.password == request.form['password']:
-            global currentuserid
+            global currentuserid,currentusertype
             currentuserid = user.id
-            if user.usertype =="Admin":
+            currentusertype = user.usertype
+            if user.usertype =="Admin":   
                 return admin()
             else:
                 auth = Authentication.query.filter_by(id=user.id).first()
@@ -461,7 +462,7 @@ def show_rooms():
             if datetime.now() <= checkInDate <= checkOutDate and (checkOutDate-datetime.now()).days < 100:
                 pass
             else:
-                if curUserId == 0:
+                if currentusertype== "Admin":
                     return render_template('adminCalendar.html', flag=0)
                 return render_template('calender.html', flag=0)
         print("called")
