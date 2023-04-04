@@ -227,7 +227,9 @@ def AddBaseAdmin():
         db.session.commit()
 
     admin = User(id=0, firstname="devichand",lastname="budagam", email="devichand579@gmail.com",username="devichand", password="Devichand@123", address="Bhadrachalam , Telangana", age=19, gender="Male", rollstd="21CS30012",usertype="Admin",imagefile="./static/images/admin.jpg",doc="./static/images/id.jpg")
+    val=Authentication(id=0,val=1)
     db.session.add(admin)
+    db.session.add(val)
     db.session.commit()
 
 
@@ -265,7 +267,11 @@ def welcome():
             global currentuserid,currentusertype
             currentuserid = user.id
             currentusertype = user.usertype
-            if user.usertype =="Admin":   
+            if user.usertype =="Admin":
+                auth = Authentication.query.filter_by(id=user.id).first()
+                print(auth.val)
+                if auth.val != 1:
+                    return render_template('index.html',flag=auth.val)
                 return admin()
             else:
                 auth = Authentication.query.filter_by(id=user.id).first()
@@ -326,12 +332,13 @@ def check():
     i=User.query.count()
     user=User.query.filter_by(id=i).first()
     otp=send_mail("OTP for registration","Enter the otp for verification",user.email)
-    if request.method =="POST":
+    if request.method =="GET":
         if otp==int(request.form['otp']):
             return redirect('/',flag=3)
         else:
             db.session.delete(user)
             print("User deleted successfully")
+            db.session.commit()
             return redirect('/')
     return render_template('otp.html',flag=0)
 
