@@ -292,7 +292,7 @@ def profile():
 def sign_up():
     global otp
     if request.method == "POST":
-        newid = User.query.count()+1
+        newid = User.query.count()
         username = request.form['username']
         password = request.form['password']
         firstname= request.form['first_name']
@@ -308,14 +308,11 @@ def sign_up():
             
         
         checkusername = User.query.filter_by(username=request.form['username']).first()
-        checkemail = User.query.filter_by(username=request.form['email']).first()
-        if checkusername is None and checkemail is None:
+        if checkusername is None:
             newUser = User(id=newid, firstname=firstname,lastname=lastname, email=email, username=username, password=password, address=address, age=age, gender=gender, rollstd=rollStd, usertype=usertype, imagefile=imagefile, doc=doc)
             newAuthReq = Authentication(id=newid, val=0)
             db.session.add(newAuthReq)
             db.session.commit()
-        elif checkemail is not None:
-            return render_template('regform.html', flag=2)
         else:
             return render_template('regform.html', flag=0)
         # push to db
@@ -323,7 +320,7 @@ def sign_up():
             db.session.add(newUser)
             db.session.commit()
             print("User added successfully")
-            i=User.query.count()
+            i=User.query.count()-1
             user=User.query.filter_by(id=i).first()
             otp=send_mail("OTP for registration","Enter the otp for verification",user.email)
             return redirect('/otp')
@@ -334,7 +331,7 @@ def sign_up():
 @app.route('/otp', methods=['POST','GET'])
 def check():
     if request.method =="POST":
-        i=User.query.count()
+        i=User.query.count()-1
         user=User.query.filter_by(id=i).first()
         if otp==int(request.form['otp']):
             return render_template('index.html',flag=3)
@@ -343,7 +340,7 @@ def check():
             print("User deleted successfully")
             db.session.commit()
             return render_template('index.html',flag=4)
-    return render_template('otp.html',flag=0)
+    return render_template('otp.html')
 
     
 

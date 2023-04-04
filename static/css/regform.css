@@ -6,6 +6,11 @@ body {
 	margin: 0;
 
 }
+.warning{
+	
+	color: red;
+	font-weight: bold;
+}
  .clearfix:after {
 	 content: "";
 	 display: block;
