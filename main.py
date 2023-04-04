@@ -290,6 +290,7 @@ def profile():
 
 @app.route('/signup', methods=["POST", "GET"])
 def sign_up():
+    global otp
     if request.method == "POST":
         newid = User.query.count()+1
         username = request.form['username']
@@ -322,6 +323,9 @@ def sign_up():
             db.session.add(newUser)
             db.session.commit()
             print("User added successfully")
+            i=User.query.count()
+            user=User.query.filter_by(id=i).first()
+            otp=send_mail("OTP for registration","Enter the otp for verification",user.email)
             return redirect('/otp')
         except:
             print("Could not add new user to the database")
@@ -329,10 +333,7 @@ def sign_up():
 
 @app.route('/otp', methods=['POST','GET'])
 def check():
-    i=User.query.count()
-    user=User.query.filter_by(id=i).first()
-    otp=send_mail("OTP for registration","Enter the otp for verification",user.email)
-    if request.method =="GET":
+    if request.method =="POST":
         if otp==int(request.form['otp']):
             return render_template('index.html',flag=3)
         else:
@@ -379,7 +380,6 @@ def authorize(userId, desc):
 def addguesthouse():
     if request.method == "POST":
         newid = GuestHouse.query.count()+1
-        name = request.form['name']
         address = request.form['address']
         description = request.form['description']
 
@@ -389,7 +389,7 @@ def addroom():
     if request.method == "POST":
         newid = Rooms.query.count()+1
         floor= request.form['floor']
-        type= request.form['type']
+        roomtype= request.form['type']
         description= request.form['description']
         priceperDay= request.form['priceperDay']
         occupancy= request.form['occupancy']
