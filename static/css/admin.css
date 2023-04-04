@@ -67,7 +67,7 @@ button.ghost {
     display: flex;
     justify-content: space-evenly;
     color: white;
-    background-color: rgb(248, 66, 66);
+    background-color: #4692e3;
     width: 80%;
     margin: 3rem auto;
     border: black 2px solid;
@@ -113,7 +113,7 @@ h4 {
 
     width:100%;
     /*margin:auto;*/
-background-color:rgb(255, 118, 118)
+background-color:#4692e3
 }
 
 .navigation{
@@ -135,9 +135,9 @@ background-color:rgb(255, 118, 118)
  .nav li {
   flex: 1;
   border-style: solid;
-  border-color: rgb(255, 87, 87);
+  border-color: #4692e3;
   height: 65px;
-  background:rgb(255, 118, 118) ;
+  background:#4692e3 ;
 }
 
 .nav a {
@@ -171,7 +171,7 @@ background-color:rgb(255, 118, 118)
 	align-items: center;
 	color: white;
 	/* Other */
-	background-color: rgb(248, 66, 66);
+	background-color: #4692e3;
 	box-shadow: 0 2px 10px 0 rgba(0,0,0, 0.1);
 }
 

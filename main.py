@@ -13,8 +13,8 @@ curuserd = -1
 checkindate = datetime.now()
 checkoutdate = datetime.now()
 srt = '0'
-foodid = '0'
-availableonly = '0'
+foodId = '0'
+availableOnly = '0'
 roomid = 0
 rooms = []
 avail = []
@@ -53,9 +53,9 @@ class GuestHouse(db.Model):
 class Rooms(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     floor = db.Column(db.Integer)
-    type = db.Column(db.String(50))
+    roomtype = db.Column(db.String(50))
     description = db.Column(db.String(100)) 
-    status = db.Column(db.String(100))
+    status = db.Column(db.String(200))
     ghId = db.Column(db.Integer)
     pricePerDay = db.Column(db.Integer)
     occupancy = db.Column(db.Integer)
@@ -83,6 +83,7 @@ class Booking(db.Model):
     userId = db.Column(db.Integer)
     roomId = db.Column(db.Integer)
     foodId = db.Column(db.Integer)
+    amenitiesId = db.Column(db.Integer)
     checkindate = db.Column(db.DateTime)
     checkoutdate = db.Column(db.DateTime)
     dateOfBooking = db.Column(db.DateTime)
@@ -179,7 +180,57 @@ def checkbooking(bookingid):
     updatestatus(booking.roomid,checkindate,checkoutdate,'1')
     return True
     
-    
+
+def AddBaseAdmin():
+    st="0"
+    rooms = [Rooms(id=1, floor=0, roomtype="D/B AC Rooms", description="Double Bed", status=st, ghId=1, pricePerDay=1000, occupancy=2, ac=1),
+                Rooms(id=2, floor=0, roomtype="D/B NON AC Rooms", description="Double Bed", status=st, ghId=1, pricePerDay=800, occupancy=2, ac=0),
+                Rooms(id=3, floor=1, roomtype="Suite Rooms", description="Single Bed", status=st, ghId=1, pricePerDay=2000, occupancy=2, ac=0),
+                Rooms(id=4, floor=2, roomtype="Meeting Room", description="for meeting", status=st, ghId=1, pricePerDay=5000, occupancy=10, ac=1),
+                Rooms(id=5, floor=0, roomtype="D/B AC Rooms", description="Double Bed", status=st, ghId=2, pricePerDay=600, occupancy=3, ac=1),
+                Rooms(id=6, floor=0, roomtype="D/B Non AC Rooms", description="Double Bed", status=st, ghId=2, pricePerDay=400, occupancy=3, ac=0),
+                Rooms(id=7, floor=2, roomtype="Dormitory Beds AC", description="Single Bed", status=st, ghId=2, pricePerDay=250, occupancy=1, ac=1)]
+
+    for i in rooms:
+        db.session.add(i)
+        db.session.commit()
+
+    houses = [GuestHouse(id=1, address="IIT Kharagpur, Kharagpur 721302", description="Technology Guest House"),
+                GuestHouse(id=2, address="IIT Kharagpur, Kharagpur 721302", description="Visveswaraya Guest House"),
+                GuestHouse(id=3, address="HC Block, Sector-III Salt Lake City Kolkata-700106", description="Kolkata Guest House")]
+
+    for i in houses:
+        db.session.add(i)
+        db.session.commit()
+
+    foods = [FoodOptions(id=1, pricePerDay=200, type='North Indian Veg'),
+                FoodOptions(id=2, pricePerDay=300, type='North Indian Non-Veg'),
+                FoodOptions(id=3, pricePerDay=250, type='South Indian Veg'),
+                FoodOptions(id=4, pricePerDay=350, type='South Indian Non-Veg'),
+                FoodOptions(id=5, pricePerDay=300, type='Chinese'),
+                FoodOptions(id=6, pricePerDay=450, type='Italian'),
+                FoodOptions(id=7, pricePerDay=400, type='Continental')]
+
+    for i in foods:
+        db.session.add(i)
+        db.session.commit()
+
+    amenities = [Amenities(id=1,pricePerDay=200, type="Gym"),
+                Amenities(id=2,pricePerDay=200, type="Swimming Pool"),
+                Amenities(id=3,pricePerDay=100, type="Library"),
+                Amenities(id=4,pricePerDay=100, type="Laundry"),
+                Amenities(id=5, pricePerDay=400,type="Movie Hall"),
+                Amenities(id=6, pricePerDay=800,type="Bar")]
+
+    for i in amenities:
+        db.session.add(i)
+        db.session.commit()
+
+    admin = User(id=0, firstname="devichand",lastname="budagam", email="devichand579@gmail.com",username="devichand", password="Devichand@123", address="Bhadrachalam , Telangana", age=19, gender="Male", rollstd="21CS30012",usertype="Admin",imagefile="./static/images/admin.jpg",doc="./static/images/id.jpg")
+    db.session.add(admin)
+    db.session.commit()
+
+
 if app.config["DEBUG"]:
     @app.after_request
     def after_request(response):
@@ -190,7 +241,12 @@ if app.config["DEBUG"]:
 
 @app.before_first_request
 def create_tables():
+     db.drop_all()
      db.create_all()
+     AddBaseAdmin()
+     
+
+
     
 @app.route('/details', methods=['POST'])
 def details():
@@ -220,6 +276,9 @@ def welcome():
             return render_template('index.html',flag=1)
     return render_template('index.html',flag=-1)
 
+def profile():
+    user = User.query.filter_by(id=currentuserid).first()
+    return render_template('profile.html',user=user)
 
 
 @app.route('/signup', methods=["POST", "GET"])
@@ -263,14 +322,15 @@ def sign_up():
 
 @app.route('/otp', methods=['POST','GET'])
 def check():
+    i=User.query.count()
+    user=User.query.filter_by(id=i).first()
+    otp=send_mail("OTP for registration","Enter the otp for verification",user.email)
     if request.method =="POST":
-        i=User.query.count()
-        user=User.query.filter_by(id=i).first()
-        otp=send_mail("OTP for registration","Enter the otp for verification",user.email)
-        if otp==request.form['otp']:
+        if otp==int(request.form['otp']):
             return redirect('/',flag=3)
         else:
             db.session.delete(user)
+            print("User deleted successfully")
             return redirect('/')
     return render_template('otp.html',flag=0)
 
@@ -306,6 +366,184 @@ def authorize(userId, desc):
     userVal.val = desc
     db.session.commit()
     return admin()
+
+@app.route('/changedetails', methods=["POST", "GET"])
+def addguesthouse():
+    if request.method == "POST":
+        newid = GuestHouse.query.count()+1
+        name = request.form['name']
+        address = request.form['address']
+        description = request.form['description']
+
+    return render_template('addguesthouse.html')
+
+def addroom():
+    if request.method == "POST":
+        newid = Rooms.query.count()+1
+        floor= request.form['floor']
+        type= request.form['type']
+        description= request.form['description']
+        priceperDay= request.form['priceperDay']
+        occupancy= request.form['occupancy']
+        ac= request.form['ac']
+        ghid= request.form['ghid']
+        status="0"
+
+    return render_template('addroom.html')
+
+def addfoodoptions():
+    if request.method == "POST":
+        newid = FoodOptions.query.count()+1
+        type= request.form['type']
+        priceperDay= request.form['priceperDay']
+
+    return render_template('addfoodoptions.html')
+
+def addamenities():
+    if request.method == "POST":
+        newid = Amenities.query.count()+1
+        type= request.form['type']
+        priceperDay= request.form['priceperDay']
+
+    return render_template('addamenities.html')
+
+@app.route('/rooms', methods=["POST", "GET"])
+def show_rooms():
+    global checkInDate
+    global checkOutDate
+    global srt
+    global foodId
+    global availableOnly
+    global rooms
+    global avail
+    global days
+    global urls
+    global roomAvail
+
+    if 'availableOnly' in request.form:
+        print("checking availability")
+        if request.form['availableOnly'] == '1':
+            availableOnly = '1'
+            rooms = [i for i in rooms if checkAvailable(i)]
+        else:
+            availableOnly = '0'
+            rooms = Rooms.query.all()
+
+    elif 'srt' in request.form:
+        print("sorting")
+        if request.form['srt'] == '0':
+            srt = '0'
+            rooms.sort(key=lambda x: x.pricePerDay)
+        else:
+            srt = '1'
+            rooms.sort(key=lambda x: x.pricePerDay, reverse=True)
+
+    if 'foodId' in request.form:
+        print("addind food")
+
+        for i in rooms:
+            temp = Rooms.query.filter_by(id=i.id).first()
+            i.pricePerDay = temp.pricePerDay
+        foodId = request.form['foodId']
+
+        idx = int(foodId)
+        foodItem = FoodOptions.query.filter_by(id=idx).first()
+        if foodItem is not None:
+            for i in rooms:
+                i.pricePerDay += foodItem.pricePerDay
+    else:
+        print("called")
+        if 'checkintime' in request.form:
+            checkindate = datetime.strptime(request.form['checkintime'], '%Y-%m-%d')
+            checkoutdate = datetime.strptime(request.form['checkouttime'], '%Y-%m-%d')
+            checkInDate = checkindate
+            checkOutDate = checkoutdate
+            if datetime.now() <= checkInDate <= checkOutDate and (checkOutDate-datetime.now()).days < 100:
+                pass
+            else:
+                if curUserId == 0:
+                    return render_template('adminCalendar.html', flag=0)
+                return render_template('calender.html', flag=0)
+        print("called")
+        print(checkInDate)
+        print(checkOutDate)
+        if availableOnly == '1':
+            rooms = [i for i in rooms if checkAvailable(i)]
+        else:
+            rooms = Rooms.query.all()
+        if srt == '0':
+            rooms.sort(key=lambda x: x.pricePerDay)
+        else:
+            rooms.sort(key=lambda x: x.pricePerDay, reverse=True)
+        if foodId != '0':
+            for i in rooms:
+                temp = Rooms.query.filter_by(id=i.id).first()
+                i.pricePerDay = temp.pricePerDay
+            idx = int(foodId)
+            foodItem = FoodOptions.query.filter_by(id=idx).first()
+            if foodItem is not None:
+                for i in rooms:
+                    i.pricePerDay += foodItem.pricePerDay
+        curdate = datetime.now()
+        startDay = max(curdate, checkInDate-timedelta(days=3)).day - curdate.day
+        startIdx = startDay
+        startdate = max(curdate, checkInDate-timedelta(days=3))
+        for i in range(7):
+            temp = startdate + timedelta(days=i)
+            days.append(temp.day)
+        avail = []
+        for room in rooms:
+            temp = []
+            urls.append("/room/"+str(room.id))
+            print(room.status)
+            for j in range(7):
+                temp.append(int(room.status[startIdx+j]))
+            avail.append(temp)
+
+    print(avail)
+    print(len(rooms))
+    roomAvail = [0]*len(rooms)
+    for i, room in enumerate(rooms):
+        roomAvail[i] = 1 if checkAvailable(room) else 0
+    print(roomAvail)
+    return render_template('Booking.html', rooms=rooms, avail=avail, days=days, urls=urls, availableOnly=availableOnly, srt=srt, foodId=foodId, roomAvail=roomAvail)
+
+@app.route('/room/<roomid>', methods=["POST", "GET"])
+def room(roomid):
+    global roomId
+    roomId = int(roomid)
+    # print("Room ID is : " + roomId)
+    roomBook = Rooms.query.filter_by(id=roomId).first()
+    foodBook = FoodOptions.query.filter_by(id=foodId).first()
+    roomCost = roomBook.pricePerDay*((checkOutDate.day-checkInDate.day)+1)
+    foodCost = 0
+    if foodBook is not None:
+        foodCost = foodBook.pricePerDay*((checkOutDate.day-checkInDate.day)+1)
+
+    payable = 0.2*(roomCost+foodCost)
+    return render_template('Payment.html', roomPrice=roomCost, foodPrice=foodCost, payable=payable)
+
+
+@app.route('/dates', methods=["POST", "GET"])
+def dates():
+    return render_template('calender.html')
+
+
+@app.route('/history', methods=["POST", "GET"])
+def history():
+    currentDate = datetime.now()
+    userBookings = Booking.query.filter_by(userId=curUserId).all()
+    for i in userBookings:
+        if currentDate > i.checkInDate and i.confirmation == 1:
+            i.confirmation = 4
+            db.session.commit()    
+    rooms = [Rooms.query.filter_by(id=i.roomId).first() for i in userBookings]
+    costs = [TotalBookingCost(i) for i in userBookings]
+    user = User.query.filter_by(id=curUserId).first()
+    return render_template('prevBooking.html', bookings=userBookings, user=user, rooms=rooms, prices=costs)
+
+
+
 
 if __name__ == '__main__':
     app.run(debug = True)

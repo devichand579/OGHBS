@@ -34,7 +34,8 @@
                 <span class="error">Waiting  for Authentication by Admin !!</span> {% elif flag == 1 %}
                 <span class="error">Username or Password wrong !!</span> {% elif flag == 2 %}
                 <span class="error">Authentication Denied !!</span>{% elif flag == 3%} 
-                <span class="error">Successfully registered !!</span>{% endif %}
+                <span class="error">Successfully registered !!</span>{% elif flag == 3%}
+                <span class="error">Verification Unsuccessful !!</span>{% endif %}
                 <input type="text" name="username" id="email" placeholder="UserName" />
                 <input type="password" name="password" id="password" placeholder="Password" /> 
                 <input class="button margin buttonSignIn" id="login" type="submit" value="Sign In" />
