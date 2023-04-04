@@ -334,12 +334,12 @@ def check():
     otp=send_mail("OTP for registration","Enter the otp for verification",user.email)
     if request.method =="GET":
         if otp==int(request.form['otp']):
-            return redirect('/',flag=3)
+            return render_template('index.html',flag=3)
         else:
             db.session.delete(user)
             print("User deleted successfully")
             db.session.commit()
-            return redirect('/')
+            return render_template('index.html',flag=4)
     return render_template('otp.html',flag=0)
 
     
