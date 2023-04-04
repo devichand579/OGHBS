@@ -334,6 +334,8 @@ def sign_up():
 @app.route('/otp', methods=['POST','GET'])
 def check():
     if request.method =="POST":
+        i=User.query.count()
+        user=User.query.filter_by(id=i).first()
         if otp==int(request.form['otp']):
             return render_template('index.html',flag=3)
         else:
