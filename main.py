@@ -549,7 +549,101 @@ def history():
     return render_template('prevBooking.html', bookings=userBookings, user=user, rooms=rooms, prices=costs)
 
 
+@app.route('/paymentComplete', methods=["POST", "GET"])
+def paymentComplete():
+    print("Payment Completed")
+    id = Booking.query.count() + 1
+    curRoom = Rooms.query.filter_by(id=roomId).first()
+    if checkAvailable(curRoom):
+        conf = 1
+    else:
+        conf = 0
+    queueIds = BookingQueue.query.filter_by(id=roomId).first()
+    if conf == 1:
+        updateStatus(roomId, checkInDate, checkOutDate, '1')
+        print(curRoom.status)
+    else:
+        if queueIds is None:
+            print("first")
+            newId = str(id)
+            newId = newId.rjust(4, '0')
+            stat = newId
+            stat = stat.ljust(40, '0')
+            temp = BookingQueue(id=roomId, bookingIds=stat)
+            print(stat)
+            db.session.add(temp)
+            db.session.commit()
+        else:
+            print("second")
+            addhere = 36
+            newId = str(id)
+            newId = newId.rjust(4, '0')
+            for idx in range(0, 40, 4):
+                checker = queueIds.bookingIds[idx:idx+4]
+                print(checker)
+                if int(checker) == 0:
+                    addhere = idx
+                    break
+            newstat = queueIds.bookingIds[:addhere] + newId + (queueIds.bookingIds[addhere+4:] if addhere+4 < 39 else "")
+            queueIds.bookingIds = newstat
+            db.session.commit()
 
+    newBooking = Booking(id=id, userId=curUserId, roomId=roomId, foodId=foodId, checkInDate=checkInDate, checkOutDate=checkOutDate, dateOfBooking=datetime.now().date(), confirmation=conf, feedback="")
+    try:
+        db.session.add(newBooking)
+        db.session.commit()
+        print("Booking added successfully")
+    except:
+        print("Could not add new Booking to db")
+    return history()
+
+@app.route('/cancelBooking<bookingId>', methods=["POST", "GET"])
+def cancelBooking(bookingId):
+    print("Cancelling")
+    booking = Booking.query.filter_by(id=bookingId).first()
+    roomId = booking.roomId
+    queueIds = BookingQueue.query.filter_by(id=roomId).first()
+    if booking.confirmation == 0:
+        tempIds = ""
+        for idx in range(0, 40, 4):
+            test = queueIds.bookingIds[idx:idx + 4]
+            if int(test) != booking.id:
+                tempIds += test
+        tempIds = tempIds.ljust(40, '0')
+        queueIds.bookingIds = tempIds
+        db.session.commit()
+    else:
+        updateStatus(roomId, booking.checkInDate, booking.checkOutDate, '0')
+        if queueIds is not None:
+            tempIds = ""
+            for idx in range(0, 40, 4):
+                test = queueIds.bookingIds[idx:idx + 4]
+                if checkBooking(int(test)):
+                    pass
+                else:
+                    tempiDs += test
+            tempIds = tempIds.ljust(40, '0')
+            queueIds.bookingIds = tempIds
+            db.session.commit()
+
+    booking.confirmation = 3
+    db.session.commit()
+    if curUserId == 0:
+        return adminHistory()
+    return history()
+
+@app.route('/feedback/<bookingId>', methods=["POST", "GET"])
+def feedback(bookingId):
+    return render_template('feedback.html', bookingId=bookingId)
+
+@app.route('/setfeedback/<bookingId>', methods=["POST", "GET"])
+def setfeedback(bookingId):
+    getfeedback = request.form['text']
+    booking = Booking.query.filter_by(id=bookingId).first()
+    booking.feedback = getfeedback
+    booking.confirmation = 5
+    db.session.commit()
+    return history()
 
 if __name__ == '__main__':
     app.run(debug = True)
