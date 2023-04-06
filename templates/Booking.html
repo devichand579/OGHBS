@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Online Guest House Booking system</title>
 
     <link rel="stylesheet" href="{{ url_for('static',filename='/css/Booking.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -14,7 +14,8 @@
     <header class="header-outer">
         <div class="header-inner responsive-wrapper">
             <div class="header-logo">
-                <h2>KGP Guest House</h2>
+                <h2>Kharagpur Guest House Booking</h2>
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRORteuqtaG0f0C2WogImr0JL4ui6yAckU2-A&usqp=CAU" alt="header_logo" class="img img-fluid">
             </div>
             <nav class="header-navigation">
                 
@@ -22,7 +23,6 @@
             </nav>
         </div>
     </header>
-
     <div class="complete">
         <div class="leftColumn">
             <div class="available">
@@ -44,16 +44,56 @@
                         </li>
 
                         <li>
-                            <input type="radio" id="niveg" name="food" value="1" {% if foodId=='1' %} checked="checked" {% endif %}>
-                            <label for="niveg">Veg + 200/-</label>
+                            <input type="radio" id="North indian Veg" name="food" value="1" {% if foodId=='1' %} checked="checked" {% endif %}>
+                            <label for="North indian Veg"> 200/-</label>
                             <div class="check">
                                 <div class="inside"></div>
                             </div>
                         </li>
 
                         <li>
-                            <input type="radio" id="ninonveg" name="food" value="2" {% if foodId=='2' %} checked="checked" {% endif %}>
-                            <label for="ninonveg">Non-Veg + 300/-</label>
+                            <input type="radio" id="North Indian Nonveg" name="food" value="2" {% if foodId=='2' %} checked="checked" {% endif %}>
+                            <label for="North Indian Nonveg"> 300/-</label>
+                            <div class="check">
+                                <div class="inside"></div>
+                            </div>
+                        </li>
+
+                        <li>
+                            <input type="radio" id="South Indian Veg" name="food" value="3" {% if foodId=='3' %} checked="checked" {% endif %}>
+                            <label for="South Indian Veg"> 250/-</label>
+                            <div class="check">
+                                <div class="inside"></div>
+                            </div>
+                        </li>
+
+                        <li>
+                            <input type="radio" id="South Indian Nonveg" name="food" value="4" {% if foodId=='4' %} checked="checked" {% endif %}>
+                            <label for="South Indian Nonveg"> 350/-</label>
+                            <div class="check">
+                                <div class="inside"></div>
+                            </div>
+                        </li>
+
+                        <li>
+                            <input type="radio" id="Chinese" name="food" value="5" {% if foodId=='5' %} checked="checked" {% endif %}>
+                            <label for="Chinese"> 300/-</label>
+                            <div class="check">
+                                <div class="inside"></div>
+                            </div>
+                        </li>
+
+                        <li>
+                            <input type="radio" id="Italian" name="food" value="6" {% if foodId=='6' %} checked="checked" {% endif %}>
+                            <label for="Italian"> 450/-</label>
+                            <div class="check">
+                                <div class="inside"></div>
+                            </div>
+                        </li>
+
+                        <li>
+                            <input type="radio" id="Continental" name="food" value="7" {% if foodId=='7' %} checked="checked" {% endif %}>
+                            <label for="Continental"> 400/-</label>
                             <div class="check">
                                 <div class="inside"></div>
                             </div>
@@ -63,6 +103,69 @@
                     </ul>
                 </div>
             </div>
+
+            <div class="Amenities">
+                <h2>Amenities</h2>
+                <div class="container">
+                    <ul>
+                        <li>
+                            <input type="radio" id="none" name="amenity" value="0" {% if amenitiesId=='0' %} checked="checked" , {% endif %}>
+                            <label for="none">None</label>
+                            <div class="check"></div>
+                        </li>
+
+                        <li>
+                            <input type="radio" id="Gym" name="amenity" value="1" {% if amenitiesId=='1' %} checked="checked" {% endif %}>
+                            <label for="Gym"> 200/-</label>
+                            <div class="check">
+                                <div class="inside"></div>
+                            </div>
+                        </li>
+
+                        <li>
+                            <input type="radio" id="Swimming pool" name="amenity" value="2" {% if amenitiesId=='2' %} checked="checked" {% endif %}>
+                            <label for="Swimming pool"> 200/-</label>
+                            <div class="check">
+                                <div class="inside"></div>
+                            </div>
+                        </li>
+
+                        <li>
+                            <input type="radio" id="Library" name="amenity" value="3" {% if amenitiesId=='3' %} checked="checked" {% endif %}>
+                            <label for="Library"> 100/-</label>
+                            <div class="check">
+                                <div class="inside"></div>
+                            </div>
+                        </li>
+
+                        <li>
+                            <input type="radio" id="Laundry" name="amenity" value="4" {% if amenitiesId=='4' %} checked="checked" {% endif %}>
+                            <label for="Laundry"> 100/-</label>
+                            <div class="check">
+                                <div class="inside"></div>
+                            </div>
+                        </li>
+
+                        <li>
+                            <input type="radio" id="Movie Hall" name="amenity" value="5" {% if amenitesId=='5' %} checked="checked" {% endif %}>
+                            <label for="Movie Hall"> 400/-</label>
+                            <div class="check">
+                                <div class="inside"></div>
+                            </div>
+                        </li>
+
+                        <li>
+                            <input type="radio" id="Bar" name="amenity" value="6" {% if amenitiesId=='6' %} checked="checked" {% endif %}>
+                            <label for="Bar"> 800/-</label>
+                            <div class="check">
+                                <div class="inside"></div>
+                            </div>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+
         </div>
         <div class="main">
             {% for room in rooms %} {#

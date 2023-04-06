@@ -1,9 +1,10 @@
 html {
-	 background-color: rgb(255, 129, 129);
+	 background-color: #4692e3;
+	 background-image:linear-gradient(#000000,#4692e3);
 }
 
  html {
-	 font-size: 62.5%;
+	 font-size: 50%;
 	/* Sets up the Base 10 stuff */
 }
  *, *:after, *:before {
@@ -37,7 +38,7 @@ html {
 	 height: auto;
 	 display: block;
 	 float: left;
-	 background-color: #fff;
+	 background-color: #4692e3;
 	 -webkit-box-shadow: 1px 1px 1px 1px #ccc;
 	 -moz-box-shadow: 1px 1px 1px 1px #ccc;
 	 box-shadow: 1px 1px 1px 1px #ccc;
@@ -124,7 +125,7 @@ html {
 	 line-height: 60px;
 	 width: 60%;
 	 text-align: center;
-	 color: #5fb2cf;
+	 color: #4692e3;
 	 text-decoration: none;
 	 text-transform: uppercase;
 	 font-size: 20px;
@@ -191,6 +192,20 @@ html {
 
 }
 
+.Amenities h2
+{
+	font-size: 2.5rem;
+	text-align: center;
+	margin-top: 1rem;
+	margin-left: 2rem;
+	/*padding :5rem;*/
+
+}
+.Amenities
+{
+	padding-top: 3rem;
+
+}
 .days{
 	display: flex;
 	font-size: 1.8rem;
@@ -395,17 +410,8 @@ input[type=radio]:checked ~ label{
 }
 
 body {
-		/*font-family: "DM Sans", sans-serif;*/
 	background-color:  #d2d6d9 ;
-	/*min-height: 300vh;*/
-	/*position: relative;*/
-	/*display: flex;*/
-	/*justify-content: center;*/
-	/*align-items: center;*/
-	/*flex-direction: column;*/
-	/*height: 130vh;*/
-
-
+	background-image:linear-gradient(#000000,#4692e3);
 }
 
 .responsive-wrapper {
@@ -429,7 +435,7 @@ body {
 	color: white;
 	font-size: 1.5rem;
 	/* Other */
-	background-color: rgb(248, 66, 66);
+	background-color: #4692e3;
 	box-shadow: 0 2px 10px 0 rgba(0,0,0, 0.1);
 }
 
