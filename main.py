@@ -1,7 +1,8 @@
 from flask import Flask, render_template, Response, jsonify, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
-from mail import send_mail ,send_confirmation_mail,send_payment_confirmation_mail
+import string
+from mail import send_mail ,send_confirmation_mail
 
 app = Flask(__name__)
 app.config['SECRET_KEY']='KGPGH@123'
@@ -17,6 +18,7 @@ foodId = '0'
 amenitiesId='0'
 availableOnly = '0'
 roomid = 0
+bookid=0
 rooms = []
 avail = []
 days = []
@@ -39,8 +41,6 @@ class User(db.Model):
     gender = db.Column(db.String(20))
     rollstd = db.Column(db.String(20),nullable=True,unique=True)
     usertype = db.Column(db.String(50))
-    imagefile=db.Column(db.String(50),nullable=False)
-    doc=db.Column(db.String(50),nullable=False)
     def __repr__(self):
         return '<Name %r>' % self.id
 
@@ -102,14 +102,12 @@ class Payment(db.Model):
 
 class Cash(db.Model):
     id=db.Column(db.Integer,primary_key=True)
-    currency=db.Column(db.String(20))
     amountc=db.Column(db.Float,db.ForeignKey('payment.amount'))
 
 class Creditcard(db.Model):
     id=db.Column(db.Integer,primary_key=True)
     name=db.Column(db.String(30))
     cardno=db.Column(db.String(20))
-    cvv=db.Column(db.Integer)
     amountcc=db.Column(db.Float,db.ForeignKey('payment.amount'))
    
 
@@ -231,8 +229,7 @@ def AddBaseAdmin():
     for i in amenities:
         db.session.add(i)
         db.session.commit()
-
-    admin = User(id=0, firstname="devichand",lastname="budagam", email="devichand579@gmail.com",username="devichand", password="Devichand@123", address="Bhadrachalam , Telangana", age=19, gender="Male", rollstd="21CS30012",usertype="Admin",imagefile="./static/images/admin.jpg",doc="./static/images/id.jpg")
+    admin = User(id=0, firstname="devichand",lastname="budagam", email="devichand579@gmail.com",username="devichand", password="Devichand@123", address="Bhadrachalam , Telangana", age=19, gender="Male", rollstd="21CS30012",usertype="Admin")
     val=Authentication(id=0,val=1)
     db.session.add(admin)
     db.session.add(val)
@@ -253,15 +250,6 @@ def create_tables():
      db.create_all()
      AddBaseAdmin()
      
-
-
-    
-@app.route('/details', methods=['POST'])
-def details():
-    json=request.get_json()
-    print(json)
-    
-    return jsonify(results="done")
 
 @app.route('/', methods=["POST", "GET"])
 def welcome():
@@ -289,10 +277,6 @@ def welcome():
             return render_template('index.html',flag=1)
     return render_template('index.html',flag=-1)
 
-@app.route('/profile',methods=["POST", "GET"])
-def profile():
-    user = User.query.filter_by(id=currentuserid).first()
-    return render_template('profile.html',user=user)
 
 
 @app.route('/signup', methods=["POST", "GET"])
@@ -307,16 +291,14 @@ def sign_up():
         email = request.form['email']
         address = request.form['address1']+", "+request.form['address2']+", City : "+request.form['city']+", State :"+request.form['state']        
         gender = request.form['gender']            
-        age = request.form['age']     
+        age = request.form['age']    
         rollStd = request.form['roll']
-        imagefile = request.form['image']
-        doc = request.form['doc']
         usertype = request.form['role']
             
         
         checkusername = User.query.filter_by(username=request.form['username']).first()
         if checkusername is None:
-            newUser = User(id=newid, firstname=firstname,lastname=lastname, email=email, username=username, password=password, address=address, age=age, gender=gender, rollstd=rollStd, usertype=usertype, imagefile=imagefile, doc=doc)
+            newUser = User(id=newid, firstname=firstname,lastname=lastname, email=email, username=username, password=password, address=address, age=age, gender=gender, rollstd=rollStd, usertype=usertype)
             newAuthReq = Authentication(id=newid, val=0)
             db.session.add(newAuthReq)
             db.session.commit()
@@ -335,15 +317,18 @@ def sign_up():
             print("Could not add new user to the database")
     return render_template('regform.html', flag=1)
 
+
 @app.route('/otp', methods=['POST','GET'])
 def check():
     if request.method =="POST":
         i=User.query.count()-1
+        newAuthReq = Authentication.query.filter_by(id=i).first()
         user=User.query.filter_by(id=i).first()
         if otp==int(request.form['otp']):
             return render_template('index.html',flag=3)
         else:
             db.session.delete(user)
+            db.session.delete(newAuthReq)
             print("User deleted successfully")
             db.session.commit()
             return render_template('index.html',flag=4)
@@ -517,18 +502,72 @@ def show_rooms():
 @app.route('/room/<roomid>', methods=["POST", "GET"])
 def room(roomid):
     global roomId
+    global cost
+
     roomId = int(roomid)
     bookedroom = Rooms.query.filter_by(id=roomId).first()
     bookedfood = FoodOptions.query.filter_by(id=foodId).first()
     bookedamenity= Amenities.query.filter_by(id=amenitiesId).first()
-    roomCost = roomBook.pricePerDay*((checkOutDate.day-checkInDate.day)+1)
+    roomCost = bookedroom.pricePerDay*((checkoutdate.day-checkindate.day)+1)
     foodCost = 0
-    if foodBook is not None:
-        foodCost = foodBook.pricePerDay*((checkOutDate.day-checkInDate.day)+1)
+    amenityCost=0
+    if bookedfood is not None:
+        foodCost = bookedfood.pricePerDay*((checkoutdate.day-checkindate.day)+1)
+    if bookedamenity is not None:
+        amenityCost = bookedamenity.pricePerDay*((checkoutdate.day-checkindate.day)+1)
+    diff=checkindate.day-datetime.now().day
+    cost = 0.2*(roomCost+foodCost+ amenityCost)
+    if diff>30 :
+       cost=cost*0.85
+    if diff>15 and diff<30 :
+       cost =cost*0.9
+    user=User.query.filter_by(id=curUserId).first()
+    otp=send_mail("OTP for payment verification","Enter the otp for verification", user.email)
+    return render_template('payment.html', roomPrice=roomCost, foodPrice=foodCost,amenityPrice=amenityCost, payable=cost)
 
-    payable = 0.2*(roomCost+foodCost)
-    return render_template('Payment.html', roomPrice=roomCost, foodPrice=foodCost, payable=payable)
+@app.route('/cash', methods=["POST", "GET"])
+def cash():
+    if otp==request.form['otp']:
+        newcash=Cash(id=bookid,amountc=cost)
+        db.session.add(newcash)
+        db.session.commit()
+        user=User.query.filter_by(id=curUserId).first()
+        otp=send_confirmation_mail("Successful Booking","Enter the otp for verification", user.email)
+        return redirect('/paymentComplete')
+    else:
+        user=User.query.filter_by(id=curUserId).first()
+        otp=send_mail("OTP for payment verification","Enter the otp for verification", user.email)
+        return render_template('cash.html', flag=1)
+    return render_template('cash.html', flag=0)
 
+@app.route('/credit', methods=["POST", "GET"])
+def credit():
+    if otp==request.form['otp']:
+        name=request.form['name']
+        cardno=request.form['card number']
+        newcredit=Credit(id=bookid, name=name, cardno=cardno, amountcc=cost)
+        db.session.add(newcredit)
+        db.session.commit()
+        return redirect('/paymentComplete')
+    else:
+        user=User.query.filter_by(id=curUserId).first()
+        otp=send_mail("OTP for payment verification","Enter the otp for verification", user.email)
+        return render_template('credit.html', flag=1)
+    return render_template('credit.html', flag=0)
+
+@app.route('/upi', methods=["POST", "GET"])
+def upi():
+    if otp==request.form['otp']:
+        upiid=request.form['upi']
+        newupi=UPI(id=bookid, upiid=upiid, amountu=cost)
+        db.session.add(newupi)
+        db.session.commit()
+        return redirect('/paymentComplete')
+    else:
+        user=User.query.filter_by(id=curUserId).first()
+        otp=send_mail("OTP for payment verification","Enter the otp for verification", user.email)
+        return render_template('upi.html', flag=1)
+    return render_template('upi.html', flag=0)
 
 @app.route('/dates', methods=["POST", "GET"])
 def dates():
@@ -552,10 +591,11 @@ def history():
 @app.route('/paymentComplete', methods=["POST", "GET"])
 def paymentComplete():
     print("Payment Completed")
-    id = Booking.query.count() + 1
+    id = Booking.query.count()
     curRoom = Rooms.query.filter_by(id=roomId).first()
     if checkAvailable(curRoom):
         conf = 1
+
     else:
         conf = 0
     queueIds = BookingQueue.query.filter_by(id=roomId).first()
