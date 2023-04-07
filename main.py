@@ -10,7 +10,8 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///oghbs.db'
 db = SQLAlchemy(app)
 
-curuserid = -1
+currentuserid=0
+currentusertype=""
 checkindate = datetime.now()
 checkoutdate = datetime.now()
 srt = '0'
@@ -257,8 +258,8 @@ def welcome():
         print(request.form['username'])
         user = User.query.filter_by(username=request.form['username']).first()
         print(request.form['password'])
+        global currentuserid,currentusertype
         if user is not None and user.password == request.form['password']:
-            global currentuserid,currentusertype
             currentuserid = user.id
             currentusertype = user.usertype
             if user.usertype =="Admin":
@@ -289,7 +290,7 @@ def sign_up():
         firstname= request.form['first_name']
         lastname= request.form['last_name']
         email = request.form['email']
-        address = request.form['address1']+", "+request.form['address2']+", City : "+request.form['city']+", State :"+request.form['state']        
+        address = request.form['address1']+", "+request.form['address2']+", "+request.form['city']+","+request.form['state']        
         gender = request.form['gender']            
         age = request.form['age']    
         rollStd = request.form['roll']
@@ -300,13 +301,12 @@ def sign_up():
         if checkusername is None:
             newUser = User(id=newid, firstname=firstname,lastname=lastname, email=email, username=username, password=password, address=address, age=age, gender=gender, rollstd=rollStd, usertype=usertype)
             newAuthReq = Authentication(id=newid, val=0)
-            db.session.add(newAuthReq)
-            db.session.commit()
         else:
             return render_template('regform.html', flag=0)
         # push to db
         try:
             db.session.add(newUser)
+            db.session.add(newAuthReq)
             db.session.commit()
             print("User added successfully")
             i=User.query.count()-1
@@ -362,14 +362,18 @@ def adminHistory():
 def authorize(userId, desc):
     userId = int(userId)
     desc = int(desc)
+    user=User.query.filter_by(id=userId).first()
     userVal = Authentication.query.filter_by(id=userId).first()
     userVal.val = desc
     db.session.commit()
     return admin()
 
-
+@app.route('/profile', methods=["POST", "GET"])
+def profile():
+    user = User.query.filter_by(id=currentuserid).first()
+    return render_template('profile.html', user=user)
 @app.route('/rooms', methods=["POST", "GET"])
-def show_rooms():
+def show_rooms(ghid):
     global flag1
     global checkInDate
     global checkOutDate

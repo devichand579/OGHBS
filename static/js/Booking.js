@@ -6,7 +6,6 @@ $(document).ready(function () {
             url : '/rooms',
             type : 'POST',
             data : { availableOnly : 1 },
-            //success:function(response){ document.write(response);}
             success:function(response){ $("html").load("/rooms");}
         });
         $("head").append("<link rel='stylesheet' id='extracss' href='/static/css/Booking.css' type='text/css' />");
@@ -18,7 +17,6 @@ $(document).ready(function () {
             url : '/rooms',
             type : 'POST',
             data : { availableOnly : 0 },
-            //success:function(response){ document.write(response);}
             success:function(response){ $("html").load("/rooms");}
         });
         $("head").append("<link rel='stylesheet' id='extracss' href='/static/css/Booking.css' type='text/css' />");
@@ -30,7 +28,6 @@ $(document).ready(function () {
                 url : '/rooms',
                 type : 'POST',
                 data : { srt : '0' },
-                //success:function(response){ document.write(response);}
                 success:function(response){ $("html").load("/rooms");}
             });
         }
@@ -40,7 +37,6 @@ $(document).ready(function () {
                 url : '/rooms',
                 type : 'POST',
                 data : { srt : '1' },
-                //success:function(response){ document.write(response);}
                 success:function(response){ $("html").load("/rooms");}
             });
         }
@@ -51,7 +47,6 @@ $(document).ready(function () {
             url : '/rooms',
             type : 'POST',
             data : { foodId : String(this.value) },
-            //success:function(response){ document.write(response);}
             success:function(response){ $("html").load("/rooms");}
         });
     });
@@ -61,7 +56,6 @@ $(document).ready(function () {
             url : '/rooms',
             type : 'POST',
             data : { amenitiesId : String(this.value) },
-            //success:function(response){ document.write(response);}
             success:function(response){ $("html").load("/rooms");}
         });
     });
