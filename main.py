@@ -230,7 +230,7 @@ def AddBaseAdmin():
     for i in amenities:
         db.session.add(i)
         db.session.commit()
-    admin = User(id=0, firstname="devichand",lastname="budagam", email="devichand579@gmail.com",username="devichand", password="Devichand@123", address="Bhadrachalam , Telangana", age=19, gender="Male", rollstd="21CS30012",usertype="Admin")
+    admin = User(id=0, firstname="devichand",lastname="budagam", email="devichand579@gmail.com",username="devichand", password="Devichand@123", address="Bhadrachalam , Telangana", age=19, gender="Male", rollstd="GH001",usertype="Admin")
     val=Authentication(id=0,val=1)
     db.session.add(admin)
     db.session.add(val)
@@ -373,7 +373,7 @@ def profile():
     user = User.query.filter_by(id=currentuserid).first()
     return render_template('profile.html', user=user)
 @app.route('/rooms', methods=["POST", "GET"])
-def show_rooms(ghid):
+def show_rooms():
     global flag1
     global checkInDate
     global checkOutDate

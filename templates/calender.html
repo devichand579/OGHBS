@@ -49,15 +49,16 @@
                 </div>
                 <div class="row-container">
                     <fieldset class="guesthouse">
-                      <legend>Choose Guest House</legend>
+                      <legend>Guest House</legend>
                       <select>
                           <option></option>
-                          <option value="01">Technology Guest House</option>
-                          <option value="02">Viswesarayya Guest House</option>
-                          <option value="03">Kolkota Guest House</option>
+                          <option value="0">Technology Guest House</option>
+                          <option value="1">Viswesarayya Guest House</option>
+                          <option value="2">Kolkota Guest House</option>
                         </select>
                     </fieldset>
-                    <a href="{{ url_for('show_rooms') }}" class="roomsavailability" ><button class="searchButton" type="submit">Search</button></a>
+                </div>
+                <button class="searchButton" type="submit">Search</button>
                 {% if flag==0 %}
                 <span class="error">Invalid Input!!</span> {% endif %}
             </div>
