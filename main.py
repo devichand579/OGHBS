@@ -295,16 +295,16 @@ def sign_up():
         age = request.form['age']    
         rollStd = request.form['roll']
         usertype = request.form['role']
-            
-        
+               
         checkusername = User.query.filter_by(username=request.form['username']).first()
         if checkusername is None:
-            newUser = User(id=newid, firstname=firstname,lastname=lastname, email=email, username=username, password=password, address=address, age=age, gender=gender, rollstd=rollStd, usertype=usertype)
-            newAuthReq = Authentication(id=newid, val=0)
+            pass
         else:
             return render_template('regform.html', flag=0)
         # push to db
         try:
+            newUser = User(id=newid, firstname=firstname,lastname=lastname, email=email, username=username, password=password, address=address, age=age, gender=gender, rollstd=rollStd, usertype=usertype)
+            newAuthReq = Authentication(id=newid, val=0)
             db.session.add(newUser)
             db.session.add(newAuthReq)
             db.session.commit()

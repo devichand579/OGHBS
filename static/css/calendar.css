@@ -47,7 +47,7 @@ span {
 .heading {
   position : absolute;
   top : 2px;
-  margin: 10rem 16rem;
+  margin: 10rem 19rem;
   display: flex ;
   align-items: center;
   border-radius: 20px;
@@ -185,6 +185,10 @@ span {
     text-align: center;
     /*padding: 5px;*/
 }
+.guesthouse{
+	border: 1px black;
+    text-align: center;
+}
 .searchButton:hover {
   letter-spacing: 0.8em;
   background-color: whitesmoke;
@@ -198,17 +202,16 @@ span {
 .searchButton {
   color: #4692e3;
     height: 4em;
-    padding: 0 1.5rem;
-  background-color: white;
+    padding: 0 0.8rem;
+  background-color: rgb(255, 255, 255);
     margin: 1rem 0;
   border: none;
-    font-size: 1.2rem;
-  border-radius: 3px;
+    font-size: 1.0rem;
+  border-radius: 5px;
   text-transform: uppercase;
   letter-spacing: 0.5em;
   transition: all 0.2s cubic-bezier(.4,0,.2,1);
 }
-
 .dateLabel{
     margin-top: 10px;
     margin-right: 1rem;
