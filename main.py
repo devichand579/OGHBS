@@ -394,8 +394,10 @@ def show_rooms():
             rooms.append(i)
     if 'foodId' in request.form:
         foodId = request.form['foodId']
+        print(foodId)
     if 'amenitiesId' in request.form:
         amenitiesId = request.form['amenitiesId']
+        print(amenitiesId)
     if checkindate is not None and checkoutdate is not None:
         checkInDate = checkindate
         checkOutDate = checkoutdate
@@ -448,7 +450,7 @@ def show_rooms():
 def room(roomid):
     global roomId
     global cost
-
+    global otpc
     roomId = int(roomid)
     bookedroom = Rooms.query.filter_by(id=roomId).first()
     bookedfood = FoodOptions.query.filter_by(id=foodId).first()
@@ -461,18 +463,19 @@ def room(roomid):
     if bookedamenity is not None:
         amenityCost = bookedamenity.pricePerDay*((checkoutdate.day-checkindate.day)+1)
     diff=checkindate.day-datetime.now().day
-    cost = 0.2*(roomCost+foodCost+ amenityCost)
+    cost = (roomCost+foodCost+ amenityCost)
     if diff>30 :
        cost=cost*0.85
     if diff>15 and diff<30 :
        cost =cost*0.9
-    user=User.query.filter_by(id=curUserId).first()
-    otp=send_mail("OTP for payment verification","Enter the otp for verification", user.email)
+    cost= 0.2*cost
+    user=User.query.filter_by(id=currentuserid).first()
+    otpc=send_mail("OTP for payment verification","Enter the otp for verification", user.email)
     return render_template('payment.html', roomPrice=roomCost, foodPrice=foodCost,amenityPrice=amenityCost, payable=cost)
 
 @app.route('/cash', methods=["POST", "GET"])
 def cash():
-    if otp==request.form['otp']:
+    if otpc==int(request.form['otp']):
         newcash=Cash(id=bookid,amountc=cost)
         db.session.add(newcash)
         db.session.commit()
