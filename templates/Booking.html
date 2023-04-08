@@ -18,20 +18,13 @@
                 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRORteuqtaG0f0C2WogImr0JL4ui6yAckU2-A&usqp=CAU" alt="header_logo" class="img img-fluid">
             </div>
             <nav class="header-navigation">
-                <a href="/">Back</a>
+                <a href="/dates">Back</a>
                 <a href="/">Logout</a>
             </nav>
         </div>
     </header>
     <div class="complete">
         <div class="leftColumn">
-            <div class="available">
-                <h2 class="title">Show Available Rooms</h2>
-                <label class="switch" for="togbtn">
-            <input type="checkbox" id="togbtn" {% if availableOnly == '1' %} checked {% endif %}/>
-            <div class="slider round"></div>
-        </label>
-        </div>
             
             <div class="foodItems">
                 <h2>Food Options</h2>
@@ -173,11 +166,11 @@
                         <section class="room">
                             <!-- Room Image -->
                             <div class="room_img">
-                                <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/04/ce/ae/dd/asif-guest-house.jpg?w=900&h=-1&s=1" />
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStn95CZ1p-LyGbmo4JU3Lqnq9vAOO9Z024srCXbZehDQ&usqp=CAU&ec=48665701" />
                             </div>
                             <!-- Room Information -->
                             <div class="room_information">
-                                <h2 class="room_information--heading">{{ room.type }}</h2>
+                                <h2 class="room_information--heading">{{ room.roomtype }}</h2>
                                 <p>{{ room.description }}</p>
                                 <div class="availability">
                                     <h3>Availability: </h3>
