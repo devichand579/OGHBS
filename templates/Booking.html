@@ -166,7 +166,12 @@
                         <section class="room">
                             <!-- Room Image -->
                             <div class="room_img">
-                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStn95CZ1p-LyGbmo4JU3Lqnq9vAOO9Z024srCXbZehDQ&usqp=CAU&ec=48665701" />
+                                {% if room.roomtype == "D/B AC Rooms" %}
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStn95CZ1p-LyGbmo4JU3Lqnq9vAOO9Z024srCXbZehDQ&usqp=CAU&ec=48665701" />{% elif room.roomtype == "D/B NON AC Rooms" %}
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStn95CZ1p-LyGbmo4JU3Lqnq9vAOO9Z024srCXbZehDQ&usqp=CAU&ec=48665701" />{% elif room.roomtype == "Suite Rooms" %}
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRhNVyAdRVhyAGMvbwPlyAA0IOw5qcQDWU6D2zgx-cSQ&usqp=CAU&ec=48665701" />{% elif room.roomtype == "Meeting Room" %}
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxX9SG9bXppRkPiF8__hbAdAVO-UEQHayp7Y1Iocux5Q&usqp=CAU&ec=48665701" />{% elif room.roomtype == "Dormitory Beds AC" %}
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTm8mHWTb8ZqN0AVe2lOSaFEvDOPdKUS18ho6wkcZ8u5NlMUOuHm_qAmSZsUpYH9DIZ6bGjgtpVGQk&usqp=CAU&ec=48665701" />{% endif %}
                             </div>
                             <!-- Room Information -->
                             <div class="room_information">

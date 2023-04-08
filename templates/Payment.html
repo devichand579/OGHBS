@@ -8,6 +8,19 @@
 </head>
 
 <body>
+  <header class="header-outer">
+    <div class="header-inner responsive-wrapper">
+        <div class="header-logo">
+            <h2>Kharagpur Guest House Booking</h2>
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRORteuqtaG0f0C2WogImr0JL4ui6yAckU2-A&usqp=CAU " alt="header_logo" class="img img-fluid" width="60" height="60">
+        </div>
+
+        <nav class="header-navigation">
+            <a href="/">Logout</a>
+            <a href="/rooms">back</a>
+        </nav>
+    </div>
+</header>
     <div class="payment-details">
         <div class="subtotal">
           <span class="category">Room Price:</span>
@@ -29,15 +42,11 @@
           <span class="category"><b>Booking Amount(20%):</b></span>
           <span class="price"><b>{{ payable }}</b></span>
         </div>
-        <form action="/credit" method="POST">
-            <input class="button" id="sButton" type="submit" value="Credit card" />
-        </form>
-        <form action="/cash" method="POST">
-            <input class="button" id="sButton" type="submit" value="Cash" />
-        </form>
-        <form action="/upi" method="POST">
-            <input class="button" id="sButton" type="submit" value="UPI" />
-        </form>
+        <div class="buttonDiv">
+          <a href="{{ url_for('cash') }}" class="payment-btn"><button class="button">Cash</button></a>
+          <a href="{{ url_for('credit') }}" class="payment-btn"><button class="button">Credit</button></a>
+          <a href="{{ url_for('upi') }}" class="payment-btn"><button class="button">Upi</button></a>
+      </div>
         
   </div>
 </body>

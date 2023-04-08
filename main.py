@@ -10,7 +10,7 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///oghbs.db'
 db = SQLAlchemy(app)
 
-
+otpc=0
 ghid=-1
 currentuserid=-1
 currentusertype=""
@@ -19,8 +19,7 @@ checkoutdate = datetime.now()
 srt = '0'
 foodId = '0'
 amenitiesId='0'
-availableOnly = '0'
-roomid = 0
+roomId = 0
 bookid=0
 rooms = []
 avail = []
@@ -452,6 +451,7 @@ def room(roomid):
     global cost
     global otpc
     roomId = int(roomid)
+    print(roomId)
     bookedroom = Rooms.query.filter_by(id=roomId).first()
     bookedfood = FoodOptions.query.filter_by(id=foodId).first()
     bookedamenity= Amenities.query.filter_by(id=amenitiesId).first()
@@ -475,22 +475,25 @@ def room(roomid):
 
 @app.route('/cash', methods=["POST", "GET"])
 def cash():
-    if otpc==int(request.form['otp']):
-        newcash=Cash(id=bookid,amountc=cost)
-        db.session.add(newcash)
-        db.session.commit()
-        user=User.query.filter_by(id=curUserId).first()
-        otp=send_confirmation_mail("Successful Booking","Enter the otp for verification", user.email)
-        return redirect('/paymentComplete')
-    else:
-        user=User.query.filter_by(id=curUserId).first()
-        otp=send_mail("OTP for payment verification","Enter the otp for verification", user.email)
-        return render_template('cash.html', flag=1)
-    return render_template('cash.html', flag=0)
+    global otpc
+    print(otpc)
+    if request.method == "POST":
+        if otpc == int(request.form['otpc']):
+            newcash=Cash(id=bookid,amountc=cost)
+            db.session.add(newcash)
+            db.session.commit()
+            return redirect('/paymentComplete')
+        else:
+            user=User.query.filter_by(id=currentuserid).first()
+            otpc=send_mail("OTP for payment verification","Enter the otp for verification", user.email)
+            return render_template('cash.html', flag=1)
+    print(roomId)
+    return render_template('cash.html', roomid=roomId, flag=0)
 
 @app.route('/credit', methods=["POST", "GET"])
 def credit():
-    if otp==request.form['otp']:
+    global otpc
+    if otpc==request.form['otp']:
         name=request.form['name']
         cardno=request.form['card number']
         newcredit=Credit(id=bookid, name=name, cardno=cardno, amountcc=cost)
@@ -498,8 +501,8 @@ def credit():
         db.session.commit()
         return redirect('/paymentComplete')
     else:
-        user=User.query.filter_by(id=curUserId).first()
-        otp=send_mail("OTP for payment verification","Enter the otp for verification", user.email)
+        user=User.query.filter_by(id=currentuserid).first()
+        otpc=send_mail("OTP for payment verification","Enter the otp for verification", user.email)
         return render_template('credit.html', flag=1)
     return render_template('credit.html', flag=0)
 
