@@ -2,6 +2,7 @@ from flask import Flask, render_template, Response, jsonify, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
 import string
+import random
 from mail import send_mail ,send_confirmation_mail
 
 app = Flask(__name__)
@@ -11,16 +12,16 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///oghbs.db'
 db = SQLAlchemy(app)
 
 otpc=0
+res=""
 ghid=-1
+cost=0
 currentuserid=-1
 currentusertype=""
 checkindate = datetime.now()
 checkoutdate = datetime.now()
-srt = '0'
 foodId = '0'
 amenitiesId='0'
 roomId = 0
-bookid=0
 rooms = []
 avail = []
 days = []
@@ -104,10 +105,12 @@ class Payment(db.Model):
 
 class Cash(db.Model):
     id=db.Column(db.Integer,primary_key=True)
+    paymentid=db.Column(db.String(20))
     amountc=db.Column(db.Float,db.ForeignKey('payment.amount'))
 
 class Creditcard(db.Model):
     id=db.Column(db.Integer,primary_key=True)
+    paymentid=db.Column(db.String(20))
     name=db.Column(db.String(30))
     cardno=db.Column(db.String(20))
     amountcc=db.Column(db.Float,db.ForeignKey('payment.amount'))
@@ -115,6 +118,7 @@ class Creditcard(db.Model):
 
 class Upi(db.Model):
     id=db.Column(db.Integer,primary_key=True)
+    paymentid=db.Column(db.String(20))
     upiid=db.Column(db.String(20))
     amountu=db.Column(db.Float,db.ForeignKey('payment.amount'))
 
@@ -233,8 +237,12 @@ def AddBaseAdmin():
         db.session.commit()
     admin = User(id=0, firstname="devichand",lastname="budagam", email="devichand579@gmail.com",username="devichand", password="Devichand@123", address="Bhadrachalam , Telangana", age=19, gender="Male", rollstd="GH001",usertype="Admin")
     val=Authentication(id=0,val=1)
+    user= User(id=1 , firstname="varsha", lastname="chepuri" , email="chepurivarsha1234@gmail.com", username="varsha", password="Varsha@123", address="Guntur, Andhra Pradesh", age=19, gender="Female", rollstd="GH002", usertype="User")
+    valu=Authentication(id=1,val=1)
     db.session.add(admin)
     db.session.add(val)
+    db.session.add(user)
+    db.session.add(valu)
     db.session.commit()
 
 
@@ -476,10 +484,17 @@ def room(roomid):
 @app.route('/cash', methods=["POST", "GET"])
 def cash():
     global otpc
+    global res
     print(otpc)
     if request.method == "POST":
         if otpc == int(request.form['otpc']):
-            newcash=Cash(id=bookid,amountc=cost)
+            id=Cash.query.count()
+            res = ''.join(random.choices(string.ascii_uppercase +string.digits, k=16))
+            print(res)
+            newcash=Cash(id=id,amountc=cost,paymentid=res)
+            id=Payment.query.count()
+            newpayment=Payment(id=id, amount=cost, paymentid=res)
+            db.session.add(newpayment)
             db.session.add(newcash)
             db.session.commit()
             return redirect('/paymentComplete')
@@ -488,36 +503,53 @@ def cash():
             otpc=send_mail("OTP for payment verification","Enter the otp for verification", user.email)
             return render_template('cash.html', flag=1)
     print(roomId)
-    return render_template('cash.html', roomid=roomId, flag=0)
+    return render_template('cash.html', flag=0)
 
 @app.route('/credit', methods=["POST", "GET"])
 def credit():
     global otpc
-    if otpc==request.form['otp']:
-        name=request.form['name']
-        cardno=request.form['card number']
-        newcredit=Credit(id=bookid, name=name, cardno=cardno, amountcc=cost)
-        db.session.add(newcredit)
-        db.session.commit()
-        return redirect('/paymentComplete')
-    else:
-        user=User.query.filter_by(id=currentuserid).first()
-        otpc=send_mail("OTP for payment verification","Enter the otp for verification", user.email)
-        return render_template('credit.html', flag=1)
+    global res
+    if request.method == "POST":
+        if otpc==request.form['otp']:
+            name=request.form['name']
+            cardno=request.form['cardnumber']
+            id=Credit.query.count()
+            res = ''.join(random.choices(string.ascii_uppercase +string.digits, k=16))
+            print(res)
+            newcredit=Credit(id=id, name=name, cardno=cardno, amountcc=cost, paymentid=res)
+            id=Payment.query.count()
+            newpayment=Payment(id=id, amount=cost, paymentid=res)
+            db.session.add(newpayment)
+            db.session.add(newcredit)
+            db.session.commit()
+            return redirect('/paymentComplete')
+        else:
+            user=User.query.filter_by(id=currentuserid).first()
+            otpc=send_mail("OTP for payment verification","Enter the otp for verification", user.email)
+            return render_template('credit.html', flag=1)
     return render_template('credit.html', flag=0)
 
 @app.route('/upi', methods=["POST", "GET"])
 def upi():
-    if otp==request.form['otp']:
-        upiid=request.form['upi']
-        newupi=UPI(id=bookid, upiid=upiid, amountu=cost)
-        db.session.add(newupi)
-        db.session.commit()
-        return redirect('/paymentComplete')
-    else:
-        user=User.query.filter_by(id=curUserId).first()
-        otp=send_mail("OTP for payment verification","Enter the otp for verification", user.email)
-        return render_template('upi.html', flag=1)
+    global otpc
+    global res
+    if request.method == "POST":
+        if otpc== int(request.form['otp']):
+            upiid=request.form['upi']
+            id=UPI.query.count()
+            res = ''.join(random.choices(string.ascii_uppercase +string.digits, k=16))
+            print(res)
+            newupi=UPI(id=id, upiid=upiid, amountu=cost, paymentid=res)
+            id=Payment.query.count()
+            newpayment=Payment(id=id, amount=cost, paymentid=res)
+            db.session.add(newpayment)
+            db.session.add(newupi)
+            db.session.commit()
+            return redirect('/paymentComplete')
+        else:
+            user=User.query.filter_by(id=currentuserid).first()
+            otpc=send_mail("OTP for payment verification","Enter the otp for verification", user.email)
+            return render_template('upi.html', flag=1)
     return render_template('upi.html', flag=0)
 
 @app.route('/dates', methods=["POST", "GET"])

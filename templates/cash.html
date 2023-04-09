@@ -16,7 +16,7 @@
             </div>
             <nav class="header-navigation">
             <a href="/">Logout</a>
-              <a href="{{ url_for('room', roomid=roomid) }}">Back</a>
+              <a href="{{ url_for('show_rooms') }}">Back</a>
     
                 <button>Menu</button>
             </nav>
@@ -26,7 +26,8 @@
       <div class="form_container">
         <div class="title_container">
           <h2>Payment</h2>
-        </div>
+        </div>{% if flag == 1%}
+        <span class="error">OTP is Incorrect !!</span>{% endif %}
         <div class="row clearfix">
             <form action="/cash" method="POST">
               <div class="input_field"> <span><i aria-hidden="true" class="fa fa-envelope"></i></span>

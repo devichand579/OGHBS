@@ -3,10 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Payment</title>
-    <link rel="stylesheet" href="{{ url_for('static',filename='/css/crerdit.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='/css/credit.css') }}">
 
 </head>
 <body>
+  <header class="header-outer">
+    <div class="header-inner responsive-wrapper">
+        <div class="header-logo">
+            <h2>Kharagpur Guest House Booking</h2>
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRORteuqtaG0f0C2WogImr0JL4ui6yAckU2-A&usqp=CAU " alt="header_logo" class="img img-fluid" width="60" height="60">
+        </div>
+        <nav class="header-navigation">
+        <a href="/">Logout</a>
+          <a href="{{ url_for('show_rooms') }}">Back</a>
+
+            <button>Menu</button>
+        </nav>
+    </div>
+</header>
     <div id="root">
   <div id="card">
     <div id="card-bottom"></div>
@@ -47,7 +61,7 @@
           </span>
         </div>
         <div class="cvc">
-          <span>CVC</span>
+          <span>CVV</span>
           <span>___</span>
         </div>
       </div>
@@ -57,15 +71,18 @@
     <header>
       <h2 style="font-family: 'Montserrat', sans-serif;">Payment Information</h2>
     </header>
+    <form action="/credit" method="POST">
+    </div>{% if flag == 1%}
+    <span class="error">OTP is Incorrect !!</span>{% endif %}
     <fieldset class="card-number">
       <legend>Card Number</legend>
       <span>
-        <input id="card-number" maxlength="19" placeholder="1234 5678 9123 4567"/>
+        <input id="card-number" maxlength="19" name="cardnumber" placeholder="1234 5678 9123 4567"/>
       </span>
     </fieldset>
     <fieldset class="card-holder">
       <legend>Card holder</legend>
-      <input type="text" id="card-holder" placeholder="John Doe"/>
+      <input type="text" id="card-holder" name="name" placeholder="Enter Your Name"/>
     </fieldset>
     <div class="row-container">
       <fieldset class="expiry-month">
@@ -104,11 +121,13 @@
         </select>
       </fieldset>
       <fieldset class="cvc">
-        <legend>CVC</legend>
+        <legend>CVV</legend>
         <input type="text" maxlength="3" />
       </fieldset>
     </div>
-      <form action="/paymentComplete" method="POST">
+    <div class="input_field"> <span><i aria-hidden="true" class="fa fa-envelope"></i></span>
+      <input type="text" name="otp" placeholder="enter your otp" required />
+    </div>
           <input class="button" id="sButton" type="submit" value="Pay Now" />
       </form>
   </div>
@@ -118,5 +137,5 @@
 
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script src="{{ url_for('static',filename='/js/Payment.js') }}" crossorigin="anonymous"></script>
+<script src="{{ url_for('static',filename='/js/credit.js') }}" crossorigin="anonymous"></script>
 </html>
