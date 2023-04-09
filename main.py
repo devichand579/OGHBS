@@ -27,9 +27,6 @@ avail = []
 days = []
 urls = []
 roomAvail = []
-emptystatus = ""
-for i in range(40):
-    emptystatus+="0"
 
 
 class User(db.Model):
@@ -188,7 +185,7 @@ def checkbooking(bookingid):
 
 def AddBaseAdmin():
     st='0'
-    for i in range(30):
+    for i in range(100):
         st=st+'0'
     
     rooms = [Rooms(id=1, floor=0, roomtype="D/B AC Rooms", description="Double Bed", status=st, ghId=0, pricePerDay=1000, occupancy=2, ac=1),
@@ -581,12 +578,14 @@ def history():
 
 @app.route('/paymentComplete', methods=["POST", "GET"])
 def paymentComplete():
+    global food 
+    global amenity
     print("Payment Completed")
     id = Booking.query.count()
+    id = id + 1
     curRoom = Rooms.query.filter_by(id=roomId).first()
     if checkAvailable(curRoom):
         conf = 1
-
     else:
         conf = 0
     queueIds = BookingQueue.query.filter_by(id=roomId).first()
@@ -597,18 +596,34 @@ def paymentComplete():
         if queueIds is None:
             print("first")
             newId = str(id)
-            newId = newId.rjust(4, '0')
-            stat = newId
-            stat = stat.ljust(40, '0')
+            if len(newId) == 1:
+                newId = newId.rjust(3, '0')
+                stat = newId
+                stat = stat.ljust(36, '0')
+            if len(newId) == 2:
+                newId = newId.rjust(2, '0')
+                stat = newId
+                stat = stat.ljust(36, '0')
+            if len(newId) == 3:
+                newId = newId.rjust(1, '0')
+                stat = newId
+                stat = stat.ljust(36, '0')
+            if len(newId) == 4:
+                stat = newId
+                stat = stat.ljust(36, '0')
             temp = BookingQueue(id=roomId, bookingIds=stat)
             print(stat)
             db.session.add(temp)
-            db.session.commit()
         else:
             print("second")
             addhere = 36
             newId = str(id)
-            newId = newId.rjust(4, '0')
+            if len(newId) == 1:
+                newId = newId.rjust(3, '0')
+            if len(newId) == 2:
+                newId = newId.rjust(2, '0')
+            if len(newId) == 3:
+                newId = newId.rjust(1, '0')
             for idx in range(0, 40, 4):
                 checker = queueIds.bookingIds[idx:idx+4]
                 print(checker)
@@ -617,16 +632,27 @@ def paymentComplete():
                     break
             newstat = queueIds.bookingIds[:addhere] + newId + (queueIds.bookingIds[addhere+4:] if addhere+4 < 39 else "")
             queueIds.bookingIds = newstat
-            db.session.commit()
 
-    newBooking = Booking(id=id, userId=curUserId, roomId=roomId, foodId=foodId, checkInDate=checkInDate, checkOutDate=checkOutDate, dateOfBooking=datetime.now().date(), confirmation=conf, feedback="")
+    newBooking = Booking(id=id, userId=currentuserid, roomId=roomId, foodId=foodId, amenitiesId=amenitiesId, checkInDate=checkInDate, checkOutDate=checkOutDate, dateOfBooking=datetime.now().date(), confirmation=conf, feedback="")
     try:
+        if conf == 1:
+            food=FoodOptions.query.filter_by(id=foodId).first().type
+            amenity=AmenitiesOptions.query.filter_by(id=amenitiesId).first().type
+            text = "Payment id:"+res+"\nStatus=Confirmed"+"\nRoom:"+str(roomId)+"\nCheckIn:"+str(checkInDate)+"\nCheckOut:"+str(checkOutDate)+"\nFood:"+str(food)+"\nAmenities:"+str(amenity)+"\nConfirmation:Confirmed"
+            user = User.query.filter_by(id=currentuserid).first()
+        if conf == 0:
+            food=FoodOptions.query.filter_by(id=foodId).first().type
+            amenity=AmenitiesOptions.query.filter_by(id=amenitiesId).first().type
+            text = "Payment id:"+res+"\nStatus=In Queue"+"\nRoom:"+str(roomId)+"\nCheckIn:"+str(checkInDate)+"\nCheckOut:"+str(checkOutDate)+"\nFood:"+str(food)+"\nAmenities:"+str(amenity)+"\nConfirmation:Confirmed"
+            user = User.query.filter_by(id=currentuserid).first()
+        send_confirmation_mail("Booking Confirmed", text, user.email)
         db.session.add(newBooking)
         db.session.commit()
         print("Booking added successfully")
     except:
         print("Could not add new Booking to db")
-    return history()
+    gh=GuestHouse.query.filter_by(id=ghid).first().description
+    return render_template('confirm.html',paymentid=res,roomid=roomId,checkin=checkInDate,checkout=checkOutDate,food=food,amenity=amenity,confirmation=conf, gh=gh, dateOfBooking=datetime.now().date())
 
 @app.route('/cancelBooking<bookingId>', methods=["POST", "GET"])
 def cancelBooking(bookingId):
