@@ -162,28 +162,37 @@ def updatestatus(roomid,checkIndate,checkOutdate,val):
         stat+=val
     room=Rooms.query.filter_by(id=roomid).first()
     newstat = room.status[:checkinindex] + stat + room.status[checkoutindex+1:]
+    newroom=room
+    db.session.delete(newroom)
     room.staus = newstat
+    db.session.add(room)
     db.session.commit()
     
 def checkbooking(bookingid):
     booking = Booking.query.filter_by(id=bookingid).first()
     if booking is None:
        return False
-    room = Rooms.query.filter_by(id=booking.roomid).first()
-    checkindate=booking.checkindate
-    checkoutdate=booking.checkoutdate
-    temp=checkindate.day - datetime.now().day
+    room = Rooms.query.filter_by(id=booking.roomId).first()
+    checkIndate=booking.checkindate
+    checkOutdate=booking.checkoutdate
+    temp=checkIndate.day - datetime.now().day
     checkinindex = temp
-    temp = checkoutdate.day -datetime.now().day
+    temp = checkOutdate.day -datetime.now().day
     checkoutindex=temp
     if checkinindex<0 or checkoutindex<0:
           return False 
     for i in room.status[checkinindex : checkoutindex+1]:
         if i=='1':
            return False
+    user=User.query.filter_by(id=booking.userId).first()
+    newbook=booking
+    db.session.delete(newbook)
     booking.confirmation =1
+    db.session.add(booking)
     db.sesion.commit()
-    updatestatus(booking.roomid,checkindate,checkoutdate,'1')
+    text="Booking id :"+str(booking.id)+"\nStatus :Confirmed"
+    send_confirmation_mail("Previous Booking in Queue is Comfirmed", text, user.email)
+    updatestatus(booking.roomId,checkIndate,checkOutdate,'1')
     return True
     
 
@@ -452,6 +461,8 @@ def show_rooms():
     for i, room in enumerate(rooms):
         roomAvail[i] = 1 if checkAvailable(room) else 0
     print(roomAvail)
+    if currentusertype== "Admin":
+        return render_template('adminBooking.html', rooms=rooms, avail=avail, days=days, urls=urls, roomAvail=roomAvail)
     return render_template('Booking.html', rooms=rooms, avail=avail, days=days, urls=urls, foodId=foodId, amenitiesId=amenitiesId, roomAvail=roomAvail)
 
 @app.route('/room/<roomid>', methods=["POST", "GET"])
@@ -514,10 +525,10 @@ def credit():
         if otpc==request.form['otp']:
             name=request.form['name']
             cardno=request.form['cardnumber']
-            id=Credit.query.count()
+            id=Creditcard.query.count()
             res = ''.join(random.choices(string.ascii_uppercase +string.digits, k=16))
             print(res)
-            newcredit=Credit(id=id, name=name, cardno=cardno, amountcc=cost, paymentid=res)
+            newcredit=Creditcard(id=id, name=name, cardno=cardno, amountcc=cost, paymentid=res)
             id=Payment.query.count()
             newpayment=Payment(id=id, amount=cost, paymentid=res)
             db.session.add(newpayment)
@@ -637,7 +648,10 @@ def paymentComplete():
                     addhere = idx
                     break
             newstat = queueIds.bookingIds[:addhere] + newId + (queueIds.bookingIds[addhere+4:] if addhere+4 < 39 else "")
+            temp=queueIds
+            db.session.delete(temp)
             queueIds.bookingIds = newstat
+            db.session.add(queueIds)
 
     newBooking = Booking(id=id, userId=currentuserid, roomId=roomId, foodId=foodId, amenitiesId=amenitiesId, checkindate=checkindate, checkoutdate=checkoutdate, dateOfBooking=datetime.now().date(), confirmation=conf, feedback="")
     food=FoodOptions.query.filter_by(id=foodId).first().type
@@ -648,10 +662,10 @@ def paymentComplete():
     db.session.add(newBooking)
     try:
         if conf == 1:
-            text = "Payment id:"+res+"\nStatus=Confirmed"+"\nGuest House :"+gh+"\nRoom:"+str(type)+"\nCheckIn:"+str(checkindate)+"\nCheckOut:"+str(checkoutdate)+"\nFood:"+str(food)+"\nAmenities:"+str(amenity)+"\nConfirmation:Confirmed"
+            text = "Payment id:"+res+"\nBooking id:"+str(id)+"\nStatus=Confirmed"+"\nGuest House :"+gh+"\nRoom:"+str(type)+"\nCheckIn:"+str(checkindate)+"\nCheckOut:"+str(checkoutdate)+"\nFood:"+str(food)+"\nAmenities:"+str(amenity)+"\nConfirmation:Confirmed"
         print("confirmation1")
         if conf == 0:
-            text = "Payment id:"+res+"\nStatus=In Queue"+"\nGuest House :"+gh+"\nRoom:"+str(type)+"\nCheckIn:"+str(checkindate)+"\nCheckOut:"+str(checkoutdate)+"\nFood:"+str(food)+"\nAmenities:"+str(amenity)+"\nConfirmation:Confirmed"
+            text = "Payment id:"+res+"\nBooking id:"+str(id)+"\nStatus=In Queue"+"\nGuest House :"+gh+"\nRoom:"+str(type)+"\nCheckIn:"+str(checkindate)+"\nCheckOut:"+str(checkoutdate)+"\nFood:"+str(food)+"\nAmenities:"+str(amenity)+"\nConfirmation:Confirmed"
         send_confirmation_mail("Booking Confirmed", text, user.email)
         print("Booking added successfully")
         db.session.commit()
@@ -663,7 +677,7 @@ def paymentComplete():
 def cancelBooking(bookingId):
     print("Cancelling")
     booking = Booking.query.filter_by(id=bookingId).first()
-    roomId = booking.roomId
+    roomid = booking.roomId
     queueIds = BookingQueue.query.filter_by(id=roomId).first()
     if booking.confirmation == 0:
         tempIds = ""
@@ -671,8 +685,11 @@ def cancelBooking(bookingId):
             test = queueIds.bookingIds[idx:idx + 4]
             if int(test) != booking.id:
                 tempIds += test
-        tempIds = tempIds.ljust(40, '0')
+        tempIds = tempIds.ljust(4, '0')
+        temp=queueIds
+        db.session.delete(temp)
         queueIds.bookingIds = tempIds
+        db.session.add(queueIds)
         db.session.commit()
     else:
         updatestatus(roomId, booking.checkindate, booking.checkoutdate, '0')
@@ -683,17 +700,21 @@ def cancelBooking(bookingId):
                 if checkBooking(int(test)):
                     pass
                 else:
-                    tempiDs += test
-            tempIds = tempIds.ljust(40, '0')
+                    tempIds += test
+            if len(tempIds) < 40:
+                tempIds = tempIds.ljust(4, '0')
+            temp=queueIds
+            db.session.delete(temp)
             queueIds.bookingIds = tempIds
+            db.session.add(queueIds)
             db.session.commit()
-
+    temp=booking
+    db.session.delete(temp)
     booking.confirmation = 3
+    db.session.add(booking)
     db.session.commit()
-    food=FoodOptions.query.filter_by(id=foodId).first().type
-    amenity=AmenitiesOptions.query.filter_by(id=amenitiesId).first().type
-    text = "Payment id:"+res+"\nStatus=Cancelled"+"\nRoom:"+str(roomId)+"\nCheckIn:"+str(checkInDate)+"\nCheckOut:"+str(checkOutDate)+"\nFood:"+str(food)+"\nAmenities:"+str(amenity)+"\nConfirmation:Confirmed"
-    user = User.query.filter_by(id=currentuserid).first()
+    text = "Payment id:"+res+"\nBooking id:"+str(booking.id)+"\nStatus=Cancelled"
+    user = User.query.filter_by(id=booking.userId).first()
     send_cancellation_mail("Booking Cancelled", text, user.email)
     if currentusertype == "Admin":
         return adminHistory()
@@ -707,8 +728,11 @@ def feedback(bookingId):
 def setfeedback(bookingId):
     getfeedback = request.form['text']
     booking = Booking.query.filter_by(id=bookingId).first()
+    temp=booking
+    db.session.delete(temp)
     booking.feedback = getfeedback
     booking.confirmation = 5
+    db.session.add(booking)
     db.session.commit()
     return history()
 

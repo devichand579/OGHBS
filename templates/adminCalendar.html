@@ -24,6 +24,7 @@
         <li><a href="/admin">Authorize Users</a></li>
       <li><a href="/adminDates">View Rooms</a></li>
       <li><a href="/adminHistory">All Bookings</a></li>
+      <li><a href="/profile">Profile</a></li>
 
     </ul>
 </div>
@@ -42,67 +43,22 @@
                 <input class="dateInput" type="date" name="checkouttime" id="checkouttime" placeholder="YYYY-DD-MM">
             </div>
 
+            <div class="input_field ">
+                <label for="guest House">Guest House :</label>
+                <select name = "ghid">
+                  
+                  <option value = "0">Technology Guest House</option>
+                  <option value = "1">Viswesarayya Guest House</option>
+                  <option value = "2">Kolkota Guest House</option>
+                </select>
+              </div>
             <button class="searchButton" type="submit">Search</button>
             {% if flag==0 %}
-                <span class="error">Invalid Input!!</span> {% endif %}
+            <span class="error">Invalid Input!!</span> {% endif %}
         </div>
     </form>
 
-    <footer id="dk-footer" class="dk-footer">
-        <div class="footerContainer">
-            <div class="logo">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRORteuqtaG0f0C2WogImr0JL4ui6yAckU2-A&usqp=CAU" alt="footer_logo" class="img img-fluid">
-            </div>
-            <div class="info">
-                <div class="contact-us">
-                    <div class="contact-icon">
-                        <i class="fa fa-map-o" aria-hidden="true"></i>
-                    </div>
-                    <div class="contact-info">
-                        <h3>Contact: </h3>
-                        <p>Technology Guest House</p>
-                        <p>IIT Kharagpur</p>
-                        <p>Kharagpur, 721302</p>
-                    </div>
-                </div>
-                <div class="contact-us">
-                    <div class="contact-icon">
-                        <i class="fa fa-volume-control-phone" aria-hidden="true"></i>
-                    </div>
-                    <div class="contact-info">
-                        <h3>Phone Number: </h3>
-                        <p>+91 9756284919</p>
-                        <p>0240 2573842</p>
-                    </div>
-                </div>
-                <div class="contact-us email">
-                    <div class="contact-icon">
-                        <i class="fa fa-envelope" aria-hidden="true"></i>
-                    </div>
-                    <div class="contact-info">
-                        <h3>Email</h3>
-                        <p>oghbs@iitkgp.ac.in</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="copyright">
-            <span>Copyright © 2019, All Right Reserved Seobin</span>
-            <div class="copyright-menu">
-                <ul>
-                    <li>
-                        <a href="http://www.iitkgp.ac.in/">Home</a>
-                    </li>
-                    <li>
-                        <a href="http://www.tgh.iitkgp.ac.in/?id=randc">Terms</a>
-                    </li>
-                    <li>
-                        <a href="http://www.iitkgp.ac.in/">Contact</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </footer>
+    
 
 
 

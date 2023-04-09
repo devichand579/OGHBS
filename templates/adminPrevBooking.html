@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Adminview</title>
     <link rel="stylesheet" href="{{ url_for('static',filename='/css/prevBooking.css') }}">
 </head>
 
@@ -13,25 +13,18 @@
 <header class="header-outer">
         <div class="header-inner responsive-wrapper">
             <div class="header-logo">
-                <h2>KGP Guest House</h2>
-                {# <img src="https://assets.codepen.io/285131/acme-2.svg" />#}
+                <h2>Kharagpur Guest House Booking</h2>
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRORteuqtaG0f0C2WogImr0JL4ui6yAckU2-A&usqp=CAU " alt="header_logo" class="img img-fluid" width="60" height="60">
             </div>
 
             <nav class="header-navigation">
-               
+                <a href="/admin">Back</a>
                 <a href="/">Logout</a>
                
             </nav>
         </div>
     </header>
-    <div class="nav">
-        <ul class="navigation">
-            <li><a href="/admin">Authorize Users</a></li>
-            <li><a href="/adminDates">View Rooms</a></li>
-            <li><a href="/adminHistory">All Bookings</a></li>
 
-        </ul>
-    </div>
     {% for i in bookings %}
     <div class="bookingBox">
         <div>
@@ -41,11 +34,11 @@
             <div class="bookingDates">
                 <div class="date">
                     <h3>Date of Arrival: </h3>
-                    <h4>{{ i.checkInDate }}</h4>
+                    <h4>{{ i.checkindate }}</h4>
                 </div>
                 <div class="date">
                     <h3>Date of Departure: </h3>
-                    <h4>{{ i.checkOutDate }}</h4>
+                    <h4>{{ i.checkoutdate }}</h4>
                 </div>
                 <div class="date">
                     <h3>Date of Booking: </h3>
@@ -55,7 +48,7 @@
             <div class="details">
                 <div class="date">
                     <h3>Room: </h3>
-                    <h4>{{ rooms[loop.index0].type }}</h4>
+                    <h4>{{ rooms[loop.index0].roomtype }}</h4>
                 </div>
                 <div class="date">
                     <h3>Individuals: </h3>
