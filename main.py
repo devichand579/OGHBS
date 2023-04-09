@@ -135,16 +135,16 @@ def checkAvailable(room):
     return True
 
 def totalbookingcost(booked):
-    room = Rooms.query.filter_by(id=booked.roomid).first()
-    food = FoodOptions.query.filter_by(id=booked.foodid).first()
-    amenities=Amenities.query.filter_by(id=booked.amenitiesid).first()
+    room = Rooms.query.filter_by(id=booked.roomId).first()
+    food = FoodOptions.query.filter_by(id=booked.foodId).first()
+    amenities=Amenities.query.filter_by(id=booked.amenitiesId).first()
     dur=((booked.checkoutdate.day-booked.checkoutdate.day)+1)
     diff=booked.checkindate.day-datetime.now().day
-    cost=room.priceperday*dur
+    cost=room.pricePerDay*dur
     if food is not None :
-        cost+=food.priceperday*days
+        cost+=food.pricePerDay*days
     if amenities is not None :
-        cost+=amenities.priceperday*days
+        cost+=amenities.pricePerDay*days
     if diff>30 :
        cost=cost*0.85
     if diff>15 and diff<30 :
@@ -200,9 +200,9 @@ def AddBaseAdmin():
         db.session.add(i)
         db.session.commit()
 
-    houses = [GuestHouse(id=1, address="IIT Kharagpur, Kharagpur 721302", description="Technology Guest House"),
-                GuestHouse(id=2, address="IIT Kharagpur, Kharagpur 721302", description="Visveswaraya Guest House"),
-                GuestHouse(id=3, address="HC Block, Sector-III Salt Lake City Kolkata-700106", description="Kolkata Guest House")]
+    houses = [GuestHouse(id=0, address="IIT Kharagpur, Kharagpur 721302", description="Technology Guest House"),
+                GuestHouse(id=1, address="IIT Kharagpur, Kharagpur 721302", description="Visveswaraya Guest House"),
+                GuestHouse(id=2, address="HC Block, Sector-III Salt Lake City Kolkata-700106", description="Kolkata Guest House")]
 
     for i in houses:
         db.session.add(i)
@@ -567,12 +567,12 @@ def history():
     currentDate = datetime.now()
     userBookings = Booking.query.filter_by(userId=currentuserid).all()
     for i in userBookings:
-        if currentDate > i.checkInDate and i.confirmation == 1:
+        if currentDate > i.checkindate and i.confirmation == 1:
             i.confirmation = 4
             db.session.commit() 
     paymentids=[Payment.query.filter_by(id=i.id).first() for i in userBookings]  
     rooms = [Rooms.query.filter_by(id=i.roomId).first() for i in userBookings]
-    costs = [TotalBookingCost(i) for i in userBookings]
+    costs = [totalbookingcost(i) for i in userBookings]
     return render_template('prevBooking.html', bookings=userBookings, paymentids=paymentids, rooms=rooms, prices=costs)
 
 
@@ -580,6 +580,7 @@ def history():
 def paymentComplete():
     global food 
     global amenity
+    global gh
     print("Payment Completed")
     id = Booking.query.count()
     curRoom = Rooms.query.filter_by(id=roomId).first()
@@ -633,24 +634,22 @@ def paymentComplete():
             queueIds.bookingIds = newstat
 
     newBooking = Booking(id=id, userId=currentuserid, roomId=roomId, foodId=foodId, amenitiesId=amenitiesId, checkindate=checkInDate, checkoutdate=checkOutDate, dateOfBooking=datetime.now().date(), confirmation=conf, feedback="")
+    food=FoodOptions.query.filter_by(id=foodId).first().type
+    amenity=Amenities.query.filter_by(id=amenitiesId).first().type
+    gh=GuestHouse.query.filter_by(id=ghid).first().description
+    user = User.query.filter_by(id=currentuserid).first()
     try:
         if conf == 1:
-            food=FoodOptions.query.filter_by(id=foodId).first().type
-            amenity=AmenitiesOptions.query.filter_by(id=amenitiesId).first().type
             text = "Payment id:"+res+"\nStatus=Confirmed"+"\nRoom:"+str(roomId)+"\nCheckIn:"+str(checkInDate)+"\nCheckOut:"+str(checkOutDate)+"\nFood:"+str(food)+"\nAmenities:"+str(amenity)+"\nConfirmation:Confirmed"
-            user = User.query.filter_by(id=currentuserid).first()
+        print("confirmation1")
         if conf == 0:
-            food=FoodOptions.query.filter_by(id=foodId).first().type
-            amenity=AmenitiesOptions.query.filter_by(id=amenitiesId).first().type
             text = "Payment id:"+res+"\nStatus=In Queue"+"\nRoom:"+str(roomId)+"\nCheckIn:"+str(checkInDate)+"\nCheckOut:"+str(checkOutDate)+"\nFood:"+str(food)+"\nAmenities:"+str(amenity)+"\nConfirmation:Confirmed"
-            user = User.query.filter_by(id=currentuserid).first()
         send_confirmation_mail("Booking Confirmed", text, user.email)
         db.session.add(newBooking)
         db.session.commit()
         print("Booking added successfully")
     except:
         print("Could not add new Booking to db")
-    gh=GuestHouse.query.filter_by(id=ghid).first().description
     return render_template('confirm.html',paymentid=res,roomid=roomId,checkin=checkInDate,checkout=checkOutDate,food=food,amenity=amenity,confirmation=conf, gh=gh, dateOfBooking=datetime.now().date())
 
 @app.route('/cancelBooking<bookingId>', methods=["POST", "GET"])
