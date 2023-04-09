@@ -142,9 +142,9 @@ def totalbookingcost(booked):
     diff=booked.checkindate.day-datetime.now().day
     cost=room.pricePerDay*dur
     if food is not None :
-        cost+=food.pricePerDay*days
+        cost+=food.pricePerDay*dur
     if amenities is not None :
-        cost+=amenities.pricePerDay*days
+        cost+=amenities.pricePerDay*dur
     if diff>30 :
        cost=cost*0.85
     if diff>15 and diff<30 :
@@ -533,7 +533,7 @@ def upi():
     if request.method == "POST":
         if otpc== int(request.form['otp']):
             upiid=request.form['upi']
-            id=UPI.query.count()
+            id=Upi.query.count()
             res = ''.join(random.choices(string.ascii_uppercase +string.digits, k=16))
             print(res)
             newupi=UPI(id=id, upiid=upiid, amountu=cost, paymentid=res)
