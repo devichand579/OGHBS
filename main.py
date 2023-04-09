@@ -589,7 +589,7 @@ def paymentComplete():
         conf = 0
     queueIds = BookingQueue.query.filter_by(id=roomId).first()
     if conf == 1:
-        updateStatus(roomId, checkInDate, checkOutDate, '1')
+        updatestatus(roomId, checkInDate, checkOutDate, '1')
         print(curRoom.status)
     else:
         if queueIds is None:
@@ -632,7 +632,7 @@ def paymentComplete():
             newstat = queueIds.bookingIds[:addhere] + newId + (queueIds.bookingIds[addhere+4:] if addhere+4 < 39 else "")
             queueIds.bookingIds = newstat
 
-    newBooking = Booking(id=id, userId=currentuserid, roomId=roomId, foodId=foodId, amenitiesId=amenitiesId, checkInDate=checkInDate, checkOutDate=checkOutDate, dateOfBooking=datetime.now().date(), confirmation=conf, feedback="")
+    newBooking = Booking(id=id, userId=currentuserid, roomId=roomId, foodId=foodId, amenitiesId=amenitiesId, checkindate=checkInDate, checkoutdate=checkOutDate, dateOfBooking=datetime.now().date(), confirmation=conf, feedback="")
     try:
         if conf == 1:
             food=FoodOptions.query.filter_by(id=foodId).first().type
@@ -669,7 +669,7 @@ def cancelBooking(bookingId):
         queueIds.bookingIds = tempIds
         db.session.commit()
     else:
-        updateStatus(roomId, booking.checkInDate, booking.checkOutDate, '0')
+        updatestatus(roomId, booking.checkInDate, booking.checkOutDate, '0')
         if queueIds is not None:
             tempIds = ""
             for idx in range(0, 40, 4):
