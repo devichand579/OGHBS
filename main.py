@@ -381,8 +381,8 @@ def profile():
 
 @app.route('/rooms', methods=["POST", "GET"])
 def show_rooms():
-    global checkInDate
-    global checkOutDate
+    global checkindate
+    global checkoutdate
     global foodId
     global amenitiesId
     global rooms
@@ -650,7 +650,7 @@ def paymentComplete():
         print("Booking added successfully")
     except:
         print("Could not add new Booking to db")
-    return render_template('confirm.html',paymentid=res,roomid=roomId,checkin=checkInDate,checkout=checkOutDate,food=food,amenity=amenity,confirmation=conf, gh=gh, dateOfBooking=datetime.now().date())
+    return render_template('confirm.html',paymentid=res,roomid=roomId,checkin=checkindate,checkout=checkoutdate,food=food,amenity=amenity,confirmation=conf, gh=gh, dateOfBooking=datetime.now().date())
 
 @app.route('/cancelBooking<bookingId>', methods=["POST", "GET"])
 def cancelBooking(bookingId):
@@ -668,7 +668,7 @@ def cancelBooking(bookingId):
         queueIds.bookingIds = tempIds
         db.session.commit()
     else:
-        updatestatus(roomId, booking.checkInDate, booking.checkOutDate, '0')
+        updatestatus(roomId, booking.checkindate, booking.checkoutdate, '0')
         if queueIds is not None:
             tempIds = ""
             for idx in range(0, 40, 4):
