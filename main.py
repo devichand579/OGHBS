@@ -151,13 +151,17 @@ def totalbookingcost(booked):
        cost =cost*0.9
     return 0.2*cost 
     
-def updatestatus(roomid,checkindate,checkoutdate,val):
-    temp=checkindate.day -datetime.now().day
+def updatestatus(roomid,checkIndate,checkOutdate,val):
+    temp=checkIndate.day -datetime.now().day
     checkinindex=max(0,temp)
-    temp=checkoutdate.day-datetime.now().day
+    temp=checkOutdate.day-datetime.now().day
     checkoutindex=temp
+    dur=checkoutindex-checkinindex+1
+    stat=""
+    for i in range(dur):
+        stat+=val
     room=Rooms.query.filter_by(id=roomid).first()
-    newstat = room.status[0:checkinindex] +val*(checkoutindex-checkinindex+1) + room.status[checkoutindex+1:]
+    newstat = room.status[:checkinindex] + stat + room.status[checkoutindex+1:]
     room.staus = newstat
     db.session.commit()
     
@@ -193,7 +197,7 @@ def AddBaseAdmin():
                 Rooms(id=3, floor=1, roomtype="Suite Rooms", description="Single Bed", status=st, ghId=0, pricePerDay=2000, occupancy=2, ac=0),
                 Rooms(id=4, floor=2, roomtype="Meeting Room", description="for meeting", status=st, ghId=0, pricePerDay=5000, occupancy=10, ac=1),
                 Rooms(id=5, floor=0, roomtype="D/B AC Rooms", description="Double Bed", status=st, ghId=2, pricePerDay=600, occupancy=3, ac=1),
-                Rooms(id=6, floor=0, roomtype="D/B Non AC Rooms", description="Double Bed", status=st, ghId=2, pricePerDay=400, occupancy=3, ac=0),
+                Rooms(id=6, floor=0, roomtype="D/B NON AC Rooms", description="Double Bed", status=st, ghId=2, pricePerDay=400, occupancy=3, ac=0),
                 Rooms(id=7, floor=2, roomtype="Dormitory Beds AC", description="Single Bed", status=st, ghId=2, pricePerDay=250, occupancy=1, ac=1)]
 
     for i in rooms:
@@ -234,7 +238,7 @@ def AddBaseAdmin():
         db.session.commit()
     admin = User(id=0, firstname="devichand",lastname="budagam", email="devichand579@gmail.com",username="devichand", password="Devichand@123", address="Bhadrachalam , Telangana", age=19, gender="Male", rollstd="GH001",usertype="Admin")
     val=Authentication(id=0,val=1)
-    user= User(id=1 , firstname="varsha", lastname="chepuri" , email="chepurivarsha1234@gmail.com", username="varsha", password="Varsha@123", address="Guntur, Andhra Pradesh", age=19, gender="Female", rollstd="GH002", usertype="User")
+    user= User(id=1 , firstname="varsha", lastname="chepuri" , email="devichand579@gmail.com", username="varsha", password="Varsha@123", address="Guntur, Andhra Pradesh", age=19, gender="Female", rollstd="GH002", usertype="User")
     valu=Authentication(id=1,val=1)
     db.session.add(admin)
     db.session.add(val)
@@ -536,7 +540,7 @@ def upi():
             id=Upi.query.count()
             res = ''.join(random.choices(string.ascii_uppercase +string.digits, k=16))
             print(res)
-            newupi=UPI(id=id, upiid=upiid, amountu=cost, paymentid=res)
+            newupi=Upi(id=id, upiid=upiid, amountu=cost, paymentid=res)
             id=Payment.query.count()
             newpayment=Payment(id=id, amount=cost, paymentid=res)
             db.session.add(newpayment)
@@ -590,7 +594,9 @@ def paymentComplete():
         conf = 0
     queueIds = BookingQueue.query.filter_by(id=roomId).first()
     if conf == 1:
-        updatestatus(roomId, checkInDate, checkOutDate, '1')
+        print(curRoom.status)
+        updatestatus(roomId, checkindate, checkoutdate, '1')
+        curRoom = Rooms.query.filter_by(id=roomId).first()
         print(curRoom.status)
     else:
         if queueIds is None:
@@ -633,21 +639,22 @@ def paymentComplete():
             newstat = queueIds.bookingIds[:addhere] + newId + (queueIds.bookingIds[addhere+4:] if addhere+4 < 39 else "")
             queueIds.bookingIds = newstat
 
-    newBooking = Booking(id=id, userId=currentuserid, roomId=roomId, foodId=foodId, amenitiesId=amenitiesId, checkindate=checkInDate, checkoutdate=checkOutDate, dateOfBooking=datetime.now().date(), confirmation=conf, feedback="")
+    newBooking = Booking(id=id, userId=currentuserid, roomId=roomId, foodId=foodId, amenitiesId=amenitiesId, checkindate=checkindate, checkoutdate=checkoutdate, dateOfBooking=datetime.now().date(), confirmation=conf, feedback="")
     food=FoodOptions.query.filter_by(id=foodId).first().type
     amenity=Amenities.query.filter_by(id=amenitiesId).first().type
     gh=GuestHouse.query.filter_by(id=ghid).first().description
     user = User.query.filter_by(id=currentuserid).first()
+    type= Rooms.query.filter_by(id=roomId).first().roomtype
+    db.session.add(newBooking)
     try:
         if conf == 1:
-            text = "Payment id:"+res+"\nStatus=Confirmed"+"\nRoom:"+str(roomId)+"\nCheckIn:"+str(checkInDate)+"\nCheckOut:"+str(checkOutDate)+"\nFood:"+str(food)+"\nAmenities:"+str(amenity)+"\nConfirmation:Confirmed"
+            text = "Payment id:"+res+"\nStatus=Confirmed"+"\nGuest House :"+gh+"\nRoom:"+str(type)+"\nCheckIn:"+str(checkindate)+"\nCheckOut:"+str(checkoutdate)+"\nFood:"+str(food)+"\nAmenities:"+str(amenity)+"\nConfirmation:Confirmed"
         print("confirmation1")
         if conf == 0:
-            text = "Payment id:"+res+"\nStatus=In Queue"+"\nRoom:"+str(roomId)+"\nCheckIn:"+str(checkInDate)+"\nCheckOut:"+str(checkOutDate)+"\nFood:"+str(food)+"\nAmenities:"+str(amenity)+"\nConfirmation:Confirmed"
+            text = "Payment id:"+res+"\nStatus=In Queue"+"\nGuest House :"+gh+"\nRoom:"+str(type)+"\nCheckIn:"+str(checkindate)+"\nCheckOut:"+str(checkoutdate)+"\nFood:"+str(food)+"\nAmenities:"+str(amenity)+"\nConfirmation:Confirmed"
         send_confirmation_mail("Booking Confirmed", text, user.email)
-        db.session.add(newBooking)
-        db.session.commit()
         print("Booking added successfully")
+        db.session.commit()
     except:
         print("Could not add new Booking to db")
     return render_template('confirm.html',paymentid=res,roomid=roomId,checkin=checkindate,checkout=checkoutdate,food=food,amenity=amenity,confirmation=conf, gh=gh, dateOfBooking=datetime.now().date())
