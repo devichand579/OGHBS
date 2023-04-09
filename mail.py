@@ -34,6 +34,18 @@ def send_confirmation_mail(subject,text, email):
     smtp.sendmail(from_addr="devichand579@gmail.com",to_addrs=email, msg=msg.as_string())
     smtp.quit()
 
+def send_cancellation_mail(subject,text, email):
+    smtp = smtplib.SMTP('Smtp.gmail.com', 587)
+    smtp.ehlo()
+    smtp.starttls()
+    smtp.login('devichand.nssc@gmail.com', 'dytbtmfcucvocgoc')
+    
+    msg = MIMEMultipart()
+    msg['Subject'] = subject
+    text="Your Booking Has been cancelled"+"\n"+ "Details of booking :"+ "\n" + text
+    msg.attach(MIMEText(text))
+    smtp.sendmail(from_addr="devichand579@gmail.com",to_addrs=email, msg=msg.as_string())
+    smtp.quit()
 
     
 

@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
 import string
 import random
-from mail import send_mail ,send_confirmation_mail
+from mail import send_mail ,send_confirmation_mail,send_cancellation_mail
 
 app = Flask(__name__)
 app.config['SECRET_KEY']='KGPGH@123'
@@ -137,7 +137,7 @@ def checkAvailable(room):
 def totalbookingcost(booked):
     room = Rooms.query.filter_by(id=booked.roomid).first()
     food = FoodOptions.query.filter_by(id=booked.foodid).first()
-    amenities=Amenities.query.filter_by(id=booked.amenitiesId).first()
+    amenities=Amenities.query.filter_by(id=booked.amenitiesid).first()
     dur=((booked.checkoutdate.day-booked.checkoutdate.day)+1)
     diff=booked.checkindate.day-datetime.now().day
     cost=room.priceperday*dur
@@ -565,15 +565,15 @@ def dates():
 @app.route('/history', methods=["POST", "GET"])
 def history():
     currentDate = datetime.now()
-    userBookings = Booking.query.filter_by(userId=curUserId).all()
+    userBookings = Booking.query.filter_by(userId=currentuserid).all()
     for i in userBookings:
         if currentDate > i.checkInDate and i.confirmation == 1:
             i.confirmation = 4
-            db.session.commit()    
+            db.session.commit() 
+    paymentids=[Payment.query.filter_by(id=i.id).first() for i in userBookings]  
     rooms = [Rooms.query.filter_by(id=i.roomId).first() for i in userBookings]
     costs = [TotalBookingCost(i) for i in userBookings]
-    user = User.query.filter_by(id=curUserId).first()
-    return render_template('prevBooking.html', bookings=userBookings, user=user, rooms=rooms, prices=costs)
+    return render_template('prevBooking.html', bookings=userBookings, paymentids=paymentids, rooms=rooms, prices=costs)
 
 
 @app.route('/paymentComplete', methods=["POST", "GET"])
@@ -582,7 +582,6 @@ def paymentComplete():
     global amenity
     print("Payment Completed")
     id = Booking.query.count()
-    id = id + 1
     curRoom = Rooms.query.filter_by(id=roomId).first()
     if checkAvailable(curRoom):
         conf = 1
@@ -685,7 +684,12 @@ def cancelBooking(bookingId):
 
     booking.confirmation = 3
     db.session.commit()
-    if curUserId == 0:
+    food=FoodOptions.query.filter_by(id=foodId).first().type
+    amenity=AmenitiesOptions.query.filter_by(id=amenitiesId).first().type
+    text = "Payment id:"+res+"\nStatus=Cancelled"+"\nRoom:"+str(roomId)+"\nCheckIn:"+str(checkInDate)+"\nCheckOut:"+str(checkOutDate)+"\nFood:"+str(food)+"\nAmenities:"+str(amenity)+"\nConfirmation:Confirmed"
+    user = User.query.filter_by(id=currentuserid).first()
+    send_cancellation_mail("Booking Cancelled", text, user.email)
+    if currentusertype == "Admin":
         return adminHistory()
     return history()
 
