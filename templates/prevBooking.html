@@ -5,37 +5,34 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Previous Booking</title>
     <link rel="stylesheet" href="{{ url_for('static',filename='/css/prevBooking.css') }}">
 </head>
 
 <body>
-<header class="header-outer">
+    <header class="header-outer">
         <div class="header-inner responsive-wrapper">
             <div class="header-logo">
-                <h2>KGP Guest House</h2>
-                {# <img src="https://assets.codepen.io/285131/acme-2.svg" />#}
+                <h2>Kharagpur Guest House Booking</h2>
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRORteuqtaG0f0C2WogImr0JL4ui6yAckU2-A&usqp=CAU " alt="header_logo" class="img img-fluid" width="60" height="60">
             </div>
 
             <nav class="header-navigation">
                 
                 <a href="/">Logout</a>
-{#                <button>Menu</button>#}
+               
             </nav>
         </div>
     </header>
 <div class="nav">
     <ul class="navigation">
       <li><a href="/dates">Book Now</a></li>
-      <li><a href="/history">Your Booking</a></li>
+      <li><a href="/">Logout</a></li>
     </ul>
 </div>
 {% for i in bookings %}
     <div class="bookingBox">
         <div>
-            <div class="bookingId">
-                <h2># Booking ID: {{ i.id }}</h2>
-            </div>
             <div class="bookingDates">
                 <div class="date">
                     <h3>Date of Arrival: </h3>
@@ -51,6 +48,10 @@
                 </div>
             </div>
             <div class="details">
+                <div class="date">
+                    <h3>payment id: </h3>
+                    <h4>{{ paymentids[loop.index0].paymentid }}</h4>
+                </div>
                 <div class="date">
                     <h3>Room: </h3>
                     <h4>{{ rooms[loop.index0].type }}</h4>
