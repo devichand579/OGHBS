@@ -14,9 +14,8 @@
         <div class="header-inner responsive-wrapper">
             <div class="header-logo">
                 <h2>Kharagpur Guest House Booking</h2>
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRORteuqtaG0f0C2WogImr0JL4ui6yAckU2-A&usqp=CAU " alt="header_logo" class="img img-fluid" width="60" height="60">
             </div>
-
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRORteuqtaG0f0C2WogImr0JL4ui6yAckU2-A&usqp=CAU " alt="header_logo" class="img img-fluid" width="80" height="60" align="left">
             <nav class="header-navigation">
                 <a href="/dates">Book Now</a>
                 <a href="/">Logout</a>
@@ -58,13 +57,13 @@
             <div class="price">
                 <div class="date">
                     <h3 class="price">Price: </h3>
-                    <h4 class="amount">{{prices[loop.index0]}}</h4>
+                    <h4 class="amount">{{prices[loop.index0].amount}}</h4>
                 </div>
             </div>
             <div class="status">
                 <div class="date">
                     <h3 class="status">Status: </h3>
-                    <h4 class="amount">{% if i.confirmation==0 %} in Queue {% elif  i.confirmation==1 %} Confirmed {% elif  i.confirmation==5 %} Feedback done {% else %} Cancelled {% endif %}</h4>
+                    <h4 class="amount">{% if i.confirmation==0 %} in Queue {% elif  i.confirmation==1 %} Confirmed {% else %} Cancelled {% endif %}</h4>
                 </div>
             </div>
         </div>
@@ -72,19 +71,22 @@
         <div class="buttonDiv">
             <button class="button">Canceled!</button>
         </div>
-        {% elif i.confirmation==4 %}
-        <div class="buttonDiv">
-            <a href="{{ url_for('feedback', bookingId=i.id) }}" ><button class="button">FeedBack</button></a>
+        <div class="buttonDiv2">
+            <button class="button">Room Canceled !</button>
         </div>
-        {% elif i.confirmation==5 %}
-        <div class="buttonDiv">
-            <button class="button">FeedBack Done</button>
+        {% elif i.confirmation==4 %}
+        <div class="buttonDiv2">
+            <button class="button">FeedBack TimeOut</button>
         </div>
         {% else %}
         <div class="buttonDiv">
             <a href="{{ url_for('cancelBooking', bookingId=i.id) }}" class="room_features--book-btn"><button class="button">Cancel</button></a>
         </div>
+        <div class="buttonDiv2">
+            <a href="{{ url_for('feedback', bookingId=i.id) }}" ><button class="button">FeedBack</button></a>
+        </div>
         {% endif %}
+        
     </div>
 {% endfor %}
 

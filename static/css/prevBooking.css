@@ -51,7 +51,7 @@ button.ghost {
     display: flex;
     color: white;
     background-color: #9f71c3;
-    width: 80%;
+    width: 90%;
     margin: 3rem auto;
     border: black 2px solid;
     border-radius: 1rem;
@@ -82,6 +82,14 @@ h4 {
     flex-direction: column-reverse;
     justify-content: center;
     align-items: center;
+}
+
+.buttonDiv2 {
+    padding-left: 2rem;
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: center;
+    align-items: top
 }
 
 .button {
@@ -337,5 +345,20 @@ footer a {
 	align-items: center;
 	background-color: #4692e3;
 	color: white;
+}
+@keyframes example {
+	0%   {color: #46c6e3;}
+	25%  {color: #b3d844;}
+	50%  {color: #7667e8;}
+	100% {color: #e169c3;}
+}
+
+h2 {
+	text-align: center;
+	animation-name: example;
+	animation-duration: 4s;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
+	animation-timing-function: ease-in-out;
 }
 

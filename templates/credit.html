@@ -7,20 +7,6 @@
 
 </head>
 <body>
-  <header class="header-outer">
-    <div class="header-inner responsive-wrapper">
-        <div class="header-logo">
-            <h2>Kharagpur Guest House Booking</h2>
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRORteuqtaG0f0C2WogImr0JL4ui6yAckU2-A&usqp=CAU " alt="header_logo" class="img img-fluid" width="60" height="60">
-        </div>
-        <nav class="header-navigation">
-        <a href="/">Logout</a>
-          <a href="{{ url_for('show_rooms') }}">Back</a>
-
-            <button>Menu</button>
-        </nav>
-    </div>
-</header>
     <div id="root">
   <div id="card">
     <div id="card-bottom"></div>
@@ -76,9 +62,7 @@
     <span class="error">OTP is Incorrect !!</span>{% endif %}
     <fieldset class="card-number">
       <legend>Card Number</legend>
-      <span>
-        <input id="card-number" maxlength="19" name="cardnumber" placeholder="1234 5678 9123 4567"/>
-      </span>
+        <input type="text" maxlength="19" name="cardnumber" placeholder="1234 5678 9123 4567"/>
     </fieldset>
     <fieldset class="card-holder">
       <legend>Card holder</legend>
@@ -86,7 +70,7 @@
     </fieldset>
     <div class="row-container">
       <fieldset class="expiry-month">
-        <legend>Expiray Month</legend>
+        <legend>Expiry Month</legend>
         <select>
             <option></option>
             <option value="01">01</option>
@@ -124,9 +108,10 @@
         <legend>CVV</legend>
         <input type="text" maxlength="3" />
       </fieldset>
-    </div>
-    <div class="input_field"> <span><i aria-hidden="true" class="fa fa-envelope"></i></span>
-      <input type="text" name="otp" placeholder="enter your otp" required />
+      <fieldset class="cvc">
+        <legend>OTP</legend>
+        <input type="text" maxlength="4" name="otp"/>
+      </fieldset>
     </div>
           <input class="button" id="sButton" type="submit" value="Pay Now" />
       </form>

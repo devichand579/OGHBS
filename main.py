@@ -109,7 +109,6 @@ class Creditcard(db.Model):
     id=db.Column(db.Integer,primary_key=True)
     paymentid=db.Column(db.String(20))
     name=db.Column(db.String(30))
-    cardno=db.Column(db.String(20))
     amountcc=db.Column(db.Float,db.ForeignKey('payment.amount'))
    
 
@@ -123,9 +122,9 @@ class Upi(db.Model):
     
 def checkAvailable(room):
     global checkindate,checkoutdate
-    i=checkindate.day-datetime.now().day
+    i=(checkindate-datetime.now()).days
     checkinindex=i
-    j=checkoutdate.day-datetime.now().day
+    j=(checkoutdate-datetime.now()).days
     checkoutindex=j
     if checkinindex <0 or checkoutindex<0:
         return False
@@ -133,28 +132,11 @@ def checkAvailable(room):
         if x=='1':
             return False
     return True
-
-def totalbookingcost(booked):
-    room = Rooms.query.filter_by(id=booked.roomId).first()
-    food = FoodOptions.query.filter_by(id=booked.foodId).first()
-    amenities=Amenities.query.filter_by(id=booked.amenitiesId).first()
-    dur=((booked.checkoutdate.day-booked.checkoutdate.day)+1)
-    diff=booked.checkindate.day-datetime.now().day
-    cost=room.pricePerDay*dur
-    if food is not None :
-        cost+=food.pricePerDay*dur
-    if amenities is not None :
-        cost+=amenities.pricePerDay*dur
-    if diff>30 :
-       cost=cost*0.85
-    if diff>15 and diff<30 :
-       cost =cost*0.9
-    return 0.2*cost 
     
 def updatestatus(roomid,checkIndate,checkOutdate,val):
-    temp=checkIndate.day -datetime.now().day
+    temp=(checkIndate -datetime.now()).days
     checkinindex=max(0,temp)
-    temp=checkOutdate.day-datetime.now().day
+    temp=(checkOutdate-datetime.now()).days
     checkoutindex=temp
     dur=checkoutindex-checkinindex+1
     stat=""
@@ -164,20 +146,20 @@ def updatestatus(roomid,checkIndate,checkOutdate,val):
     newstat = room.status[:checkinindex] + stat + room.status[checkoutindex+1:]
     newroom=room
     db.session.delete(newroom)
-    room.staus = newstat
+    room.status = newstat
     db.session.add(room)
     db.session.commit()
     
-def checkbooking(bookingid):
+def checkBooking(bookingid):
     booking = Booking.query.filter_by(id=bookingid).first()
     if booking is None:
        return False
     room = Rooms.query.filter_by(id=booking.roomId).first()
     checkIndate=booking.checkindate
     checkOutdate=booking.checkoutdate
-    temp=checkIndate.day - datetime.now().day
+    temp=(checkIndate - datetime.now()).days
     checkinindex = temp
-    temp = checkOutdate.day -datetime.now().day
+    temp = (checkOutdate -datetime.now()).days
     checkoutindex=temp
     if checkinindex<0 or checkoutindex<0:
           return False 
@@ -189,7 +171,7 @@ def checkbooking(bookingid):
     db.session.delete(newbook)
     booking.confirmation =1
     db.session.add(booking)
-    db.sesion.commit()
+    db.session.commit()
     text="Booking id :"+str(booking.id)+"\nStatus :Confirmed"
     send_confirmation_mail("Previous Booking in Queue is Comfirmed", text, user.email)
     updatestatus(booking.roomId,checkIndate,checkOutdate,'1')
@@ -366,6 +348,14 @@ def admin():
 
 @app.route('/adminDates', methods=["POST", "GET"])
 def adminDates():
+    if request.method == "POST":
+        global checkindate
+        global checkoutdate
+        global ghid
+        checkindate = datetime.strptime(request.form['checkintime'], '%Y-%m-%d')
+        checkoutdate = datetime.strptime(request.form['checkouttime'], '%Y-%m-%d')
+        ghid=int(request.form['ghid']) 
+        return redirect('/rooms')
     return render_template('adminCalendar.html')
 
 @app.route('/adminHistory', methods=["POST", "GET"])
@@ -373,7 +363,7 @@ def adminHistory():
     bookings = Booking.query.all()
     rooms = [Rooms.query.filter_by(id=i.roomId).first() for i in bookings]
     user = [User.query.filter_by(id=i.userId).first() for i in bookings]
-    cost = [totalbookingcost(i) for i in bookings]
+    cost = [Payment.query.filter_by(id=i.id).first() for i in bookings]
     return render_template('adminPrevBooking.html', bookings=bookings, user=user, rooms=rooms, prices=cost)
 
 
@@ -443,6 +433,7 @@ def show_rooms():
         startDay = max(curdate, checkInDate-timedelta(days=3)).day - curdate.day
         startIdx = startDay
         startdate = max(curdate, checkInDate-timedelta(days=3))
+        days = []
         for i in range(7):
             temp = startdate + timedelta(days=i)
             days.append(temp.day)
@@ -450,7 +441,6 @@ def show_rooms():
         for room in rooms:
             temp = []
             urls.append("/room/"+str(room.id))
-            print(room.status)
             for j in range(7):
                 temp.append(int(room.status[startIdx+j]))
             avail.append(temp)
@@ -475,18 +465,18 @@ def room(roomid):
     bookedroom = Rooms.query.filter_by(id=roomId).first()
     bookedfood = FoodOptions.query.filter_by(id=foodId).first()
     bookedamenity= Amenities.query.filter_by(id=amenitiesId).first()
-    roomCost = bookedroom.pricePerDay*((checkoutdate.day-checkindate.day)+1)
+    roomCost = bookedroom.pricePerDay*((checkoutdate-checkindate).days+1)
     foodCost = 0
     amenityCost=0
     if bookedfood is not None:
-        foodCost = bookedfood.pricePerDay*((checkoutdate.day-checkindate.day)+1)
+        foodCost = bookedfood.pricePerDay*((checkoutdate-checkindate).days+1)
     if bookedamenity is not None:
-        amenityCost = bookedamenity.pricePerDay*((checkoutdate.day-checkindate.day)+1)
-    diff=checkindate.day-datetime.now().day
+        amenityCost = bookedamenity.pricePerDay*((checkoutdate-checkindate).days+1)
+    diff=(checkindate-datetime.now()).days
     cost = (roomCost+foodCost+ amenityCost)
-    if diff>30 :
+    if diff>=30 :
        cost=cost*0.85
-    if diff>15 and diff<30 :
+    if diff>=15 and diff<30 :
        cost =cost*0.9
     cost= 0.2*cost
     user=User.query.filter_by(id=currentuserid).first()
@@ -524,11 +514,10 @@ def credit():
     if request.method == "POST":
         if otpc==request.form['otp']:
             name=request.form['name']
-            cardno=request.form['cardnumber']
             id=Creditcard.query.count()
             res = ''.join(random.choices(string.ascii_uppercase +string.digits, k=16))
             print(res)
-            newcredit=Creditcard(id=id, name=name, cardno=cardno, amountcc=cost, paymentid=res)
+            newcredit=Creditcard(id=id, name=name, amountcc=cost, paymentid=res)
             id=Payment.query.count()
             newpayment=Payment(id=id, amount=cost, paymentid=res)
             db.session.add(newpayment)
@@ -582,12 +571,15 @@ def history():
     currentDate = datetime.now()
     userBookings = Booking.query.filter_by(userId=currentuserid).all()
     for i in userBookings:
-        if currentDate > i.checkindate and i.confirmation == 1:
+        if currentDate > i.checkoutdate + timedelta(30):
+            temp=i
+            db.session.delete(temp)
             i.confirmation = 4
+            db.session.add(i)
             db.session.commit() 
     paymentids=[Payment.query.filter_by(id=i.id).first() for i in userBookings]  
     rooms = [Rooms.query.filter_by(id=i.roomId).first() for i in userBookings]
-    costs = [totalbookingcost(i) for i in userBookings]
+    costs = [Payment.query.filter_by(id=i.id).first() for i in userBookings]
     return render_template('prevBooking.html', bookings=userBookings, paymentids=paymentids, rooms=rooms, prices=costs)
 
 
@@ -613,41 +605,42 @@ def paymentComplete():
         if queueIds is None:
             print("first")
             newId = str(id)
+            print(newId)
             if len(newId) == 1:
-                newId = newId.rjust(3, '0')
+                newId = newId.rjust(4, '0')
                 stat = newId
-                stat = stat.ljust(36, '0')
+                stat = stat.ljust(40, '0')
             if len(newId) == 2:
-                newId = newId.rjust(2, '0')
+                newId = newId.rjust(4, '0')
                 stat = newId
-                stat = stat.ljust(36, '0')
+                stat = stat.ljust(40, '0')
             if len(newId) == 3:
-                newId = newId.rjust(1, '0')
+                newId = newId.rjust(4, '0')
                 stat = newId
-                stat = stat.ljust(36, '0')
+                stat = stat.ljust(40, '0')
             if len(newId) == 4:
                 stat = newId
-                stat = stat.ljust(36, '0')
+                stat = stat.ljust(40, '0')
             temp = BookingQueue(id=roomId, bookingIds=stat)
             print(stat)
             db.session.add(temp)
         else:
-            print("second")
-            addhere = 36
+            print("next")
+            pos = 36
             newId = str(id)
             if len(newId) == 1:
-                newId = newId.rjust(3, '0')
+                newId = newId.rjust(4, '0')
             if len(newId) == 2:
-                newId = newId.rjust(2, '0')
+                newId = newId.rjust(4, '0')
             if len(newId) == 3:
-                newId = newId.rjust(1, '0')
+                newId = newId.rjust(4, '0')
             for idx in range(0, 40, 4):
                 checker = queueIds.bookingIds[idx:idx+4]
                 print(checker)
                 if int(checker) == 0:
-                    addhere = idx
+                    pos = idx
                     break
-            newstat = queueIds.bookingIds[:addhere] + newId + (queueIds.bookingIds[addhere+4:] if addhere+4 < 39 else "")
+            newstat = queueIds.bookingIds[:pos] + newId + (queueIds.bookingIds[pos+4:] if pos+4 < 39 else "")
             temp=queueIds
             db.session.delete(temp)
             queueIds.bookingIds = newstat
@@ -677,13 +670,15 @@ def paymentComplete():
 def cancelBooking(bookingId):
     print("Cancelling")
     booking = Booking.query.filter_by(id=bookingId).first()
+    money=Payment.query.filter_by(id=bookingId).first().amount
+    paymentId=Payment.query.filter_by(id=bookingId).first().paymentid
     roomid = booking.roomId
     queueIds = BookingQueue.query.filter_by(id=roomId).first()
     if booking.confirmation == 0:
         tempIds = ""
         for idx in range(0, 40, 4):
             test = queueIds.bookingIds[idx:idx + 4]
-            if int(test) != booking.id:
+            if int(str(test)) != booking.id:
                 tempIds += test
         tempIds = tempIds.ljust(4, '0')
         temp=queueIds
@@ -697,7 +692,9 @@ def cancelBooking(bookingId):
             tempIds = ""
             for idx in range(0, 40, 4):
                 test = queueIds.bookingIds[idx:idx + 4]
-                if checkBooking(int(test)):
+                print(test)
+                book=int(str(test))
+                if checkBooking(book):
                     pass
                 else:
                     tempIds += test
@@ -713,7 +710,7 @@ def cancelBooking(bookingId):
     booking.confirmation = 3
     db.session.add(booking)
     db.session.commit()
-    text = "Payment id:"+res+"\nBooking id:"+str(booking.id)+"\nStatus=Cancelled"
+    text = "Payment id:"+paymentId+"\nBooking id:"+str(booking.id)+"\nAmount refund:"+str(money)+"\nStatus=Cancelled"
     user = User.query.filter_by(id=booking.userId).first()
     send_cancellation_mail("Booking Cancelled", text, user.email)
     if currentusertype == "Admin":
@@ -731,7 +728,6 @@ def setfeedback(bookingId):
     temp=booking
     db.session.delete(temp)
     booking.feedback = getfeedback
-    booking.confirmation = 5
     db.session.add(booking)
     db.session.commit()
     return history()

@@ -19,7 +19,7 @@ body {
 	 height: 0;
 }
  .form_wrapper {
-	 background: white;
+	 background: #4692e3;
 	 width: 400px;
 	 max-width: 100%;
 	 box-sizing: border-box;
@@ -105,17 +105,17 @@ body {
 	 transition: all 0.3s ease-in-out;
 }
  .form_wrapper input[type="text"]:hover, .form_wrapper input[type="email"]:hover, .form_wrapper input[type="password"]:hover {
-	 background: #fafafa;
+	 background: #d8eb31;
 }
  .form_wrapper input[type="text"]:focus, .form_wrapper input[type="email"]:focus, .form_wrapper input[type="password"]:focus {
 	 -webkit-box-shadow: 0 0 2px 1px rgba(255, 169, 0, 0.5);
 	 -moz-box-shadow: 0 0 2px 1px rgba(255, 169, 0, 0.5);
 	 box-shadow: 0 0 2px 1px rgba(255, 169, 0, 0.5);
 	 border: 1px solid #f5ba1a;
-	 background: #fafafa;
+	 background: #d8eb31;
 }
  .form_wrapper input[type="submit"] {
-	 background: #4692e3;
+	 background: #0b00e5;
 	 height: 30px;
 	 line-height: 35px;
 	 width: 100%;
@@ -131,10 +131,10 @@ body {
 	 transition: all 0.3s ease-in-out;
 }
  .form_wrapper input[type="submit"]:hover {
-	 background: #4692e3;
+	 background: #d8eb31;
 }
  .form_wrapper input[type="submit"]:focus {
-	 background: #4692e3;
+	 background: #d8eb31;
 }
  .form_wrapper input[type="checkbox"], .form_wrapper input[type="radio"] {
 	 border: 0;
@@ -236,7 +236,7 @@ body {
 	 color: #7b7b7b;
 	 border: 1px solid #ccc;
 	 border-radius: 0;
-	 background: #fff;
+	 background: #d8eb31;
 	 appearance: none;
 	 -webkit-appearance: none;
 	 -moz-appearance: none;
@@ -247,7 +247,7 @@ body {
 }
  .select_option select:hover, .select_option select:focus {
 	 color: #000;
-	 background: #fafafa;
+	 background: #d8eb31;
 	 border-color: #000;
 	 outline: none;
 }
@@ -570,6 +570,21 @@ body {
 	color: #7b7b7b;
 	font-size: 1.1rem;
 	margin: 0.5rem 0;
+}
+@keyframes example {
+	0%   {color: #46c6e3;}
+	25%  {color: #b3d844;}
+	50%  {color: #7667e8;}
+	100% {color: #e169c3;}
+}
+
+h2 {
+	text-align: center;
+	animation-name: example;
+	animation-duration: 4s;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
+	animation-timing-function: ease-in-out;
 }
 
 

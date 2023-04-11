@@ -4,27 +4,33 @@
 
 <head>
 	<meta charset="UTF-8">
-
-
 	<link rel="stylesheet" href="{{ url_for('static',filename='/css/feedback.css') }}">
 </head>
 <body>
-<div class="content">
-	<header>
-		<h1>Feel free to drop us your feedback.</h1>
-		
-		<img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1457119/feedback-form-template.svg"
-			  alt="A woman is sitting on the floor and working on a laptop (vector illustration)" />
+	<header class="header-outer">
+		<div class="header-inner responsive-wrapper">
+			<div class="header-logo">
+				<h2>Kharagpur Guest House Booking</h2>
+			</div>
+			<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRORteuqtaG0f0C2WogImr0JL4ui6yAckU2-A&usqp=CAU " alt="header_logo" class="img img-fluid" width="80" height="60" align="left">
+			<nav class="header-navigation">
+			<a href="/">Logout</a>
+			  <a href="{{ url_for('show_rooms') }}">Back</a>
+	
+				<button>Menu</button>
+			</nav>
+		</div>
 	</header>
+<div class="content">
 	<main mv-app="feedbackForm"
 			mv-storage="#data"
 			mv-source="#source"
 			mv-mode="read">
 		<form mv-multiple="feedback" action="/setfeedback/{{ bookingId }}" method="POST">
 			<label>
-				<h2>
+				<h1>
 					How satisfied are you overall with the IIT Kharagpur Guest House?
-				</h2>
+				</h1>
 
 				<div class="tickmarks">
 					<span mv-multiple="tickmark"
@@ -52,12 +58,7 @@
 						 cols="30" rows="10"
 						 placeholder="Please give your feedback..."></textarea>
 
-			
-
 			<div class="mv-bar">
-{#				<button type="submit" class="mv-save">#}
-{#					Send Feedback#}
-{#				</button>#}
                 <input class="button" type="submit" value="Send Feedback" />
 			</div>
 		</form>

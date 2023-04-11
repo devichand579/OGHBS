@@ -29,8 +29,8 @@ span {
 
 button {
     border-radius: 20px;
-    border: 1px solid white;
-    background-color: white;
+    border: 1px solid #FEB1C0;
+    background-color: #FEB1C0;
     color: #FF4B2B;
     font-size: 12px;
     font-weight: bold;
@@ -114,12 +114,9 @@ background-color:#4692e3
 .nav ul {
   display: flex;
   list-style-type: none;
-  /*margin: 0 100px;*/
   font: 20px helvetica;
     font-size: 1.4rem;
   font-weight:bold;
-    /*font-size: 3rem;*/
-    /*font-size: 3rem;*/
   text-align: center;
 }
 
@@ -178,10 +175,7 @@ background-color:#4692e3
 }
 
 /* Styling of other elements */
-.header-logo img {
-	display: block;
-	height: calc(var(--header-inner-height) - 30px);
-}
+
 
 .header-navigation {
 	display: flex;
@@ -226,6 +220,21 @@ background-color:#4692e3
 	position: absolute;
 	bottom: -2px;
 	left: 0;
+}
+@keyframes example {
+	0%   {color: #46c6e3;}
+	25%  {color: #b3d844;}
+	50%  {color: #7667e8;}
+	100% {color: #e169c3;}
+}
+
+h2 {
+	text-align: center;
+	animation-name: example;
+	animation-duration: 4s;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
+	animation-timing-function: ease-in-out;
 }
 
 

@@ -14,9 +14,8 @@
         <div class="header-inner responsive-wrapper">
             <div class="header-logo">
                 <h2>Kharagpur Guest House Booking</h2>
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRORteuqtaG0f0C2WogImr0JL4ui6yAckU2-A&usqp=CAU " alt="header_logo" class="img img-fluid" width="60" height="60">
             </div>
-
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRORteuqtaG0f0C2WogImr0JL4ui6yAckU2-A&usqp=CAU " alt="header_logo" class="img img-fluid" width="80" height="60" align="left">
             <nav class="header-navigation">
                 <a href="/admin">Back</a>
                 <a href="/">Logout</a>
@@ -29,7 +28,7 @@
     <div class="bookingBox">
         <div>
             <div class="bookingId">
-                <h2># Booking ID: {{ i.id }}</h2>
+                <h1> Booking ID: {{ i.id }}</h1>
             </div>
             <div class="bookingDates">
                 <div class="date">
@@ -58,13 +57,19 @@
             <div class="price">
                 <div class="date">
                     <h3 class="price">Price: </h3>
-                    <h4 class="amount">{{prices[loop.index0]}}</h4>
+                    <h4 class="amount">{{prices[loop.index0].amount}}</h4>
                 </div>
             </div>
             <div class="status">
                 <div class="date">
                     <h3 class="status">Status: </h3>
                     <h4 class="amount">{% if i.confirmation==0 %} in Queue {% elif i.confirmation==1 %} Confirmed {% else %} Cancelled {% endif %}</h4>
+                </div>
+            </div>
+            <div class="Feedback">
+                <div class="date">
+                    <h3 class="status">Feedback: </h3>
+                    <h4>{{ i.feedback }}</h4>
                 </div>
             </div>
         </div>

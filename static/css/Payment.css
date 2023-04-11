@@ -10,6 +10,7 @@ body {
     background-image: linear-gradient(#193457, #193457);
     margin: 0;
     font-family: 'Montserrat', sans-serif;
+	text-align : center;
 }
 
 p {
@@ -23,10 +24,24 @@ h2 {
     color: rgb(255, 255, 255);
 }
 span {
-    font-size: 10px;
+    font-size: 20px;
 }
-
-
+.bookingBox {
+    padding: 1rem;
+    display: flex;
+    color: white;
+    background-color: #9f71c3;
+    width: 50%;
+	text-align: center;
+    margin: 3rem auto;
+    border: black 2px solid;
+    border-radius: 1rem;
+    box-shadow: 0 2px 20px 0 rgba(0,0,0, 0.1);
+}
+.date {
+    padding: 0 1rem;
+    display: flex;
+}
 button {
     border-radius: 20px;
     border: 1px solid white;
@@ -207,4 +222,19 @@ background-color:#4692e3
 	position: absolute;
 	bottom: -2px;
 	left: 0;
+}
+@keyframes example {
+	0%   {color: #46c6e3;}
+	25%  {color: #b3d844;}
+	50%  {color: #7667e8;}
+	100% {color: #e169c3;}
+}
+
+h2 {
+	text-align: center;
+	animation-name: example;
+	animation-duration: 4s;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
+	animation-timing-function: ease-in-out;
 }

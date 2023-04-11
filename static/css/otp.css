@@ -14,7 +14,7 @@ body {
     height: 0;
 }
 .form_wrapper {
-    background: white;
+    background: #4692e3;
     width: 300px;
     max-width: 100%;
     box-sizing: border-box;
@@ -102,7 +102,7 @@ body {
 }
 
 .form_wrapper input[type="text"] :hover{
-    background: #fafafa;
+    background: #d8eb31;
 }
 
 .form_wrapper input[type="text"] :focus{
@@ -110,11 +110,11 @@ body {
 -moz-box-shadow: 0 0 2px 1px rgba(255, 169, 0, 0.5);
 box-shadow: 0 0 2px 1px rgba(255, 169, 0, 0.5);
 border: 1px solid #f5ba1a;
-background: #fafafa;
+background: #d8eb31;
 }
 
 .form_wrapper input[type="submit"] {
-    background: #4692e3;
+    background: #1700e8;
     height: 35px;
     line-height: 35px;
     width: 100%;
@@ -130,10 +130,10 @@ background: #fafafa;
     transition: all 0.3s ease-in-out;
 }
 .form_wrapper input[type="submit"]:hover {
-    background: #4692e3;
+    background: #d8eb31;
 }
 .form_wrapper input[type="submit"]:focus {
-    background: #4692e3;
+    background: #d8eb31;
 }
 
 .select_option {
@@ -483,5 +483,20 @@ background: #fafafa;
    color: #7b7b7b;
    font-size: 1.1rem;
    margin: 0.5rem 0;
+}
+@keyframes example {
+	0%   {color: #46c6e3;}
+	25%  {color: #b3d844;}
+	50%  {color: #7667e8;}
+	100% {color: #e169c3;}
+}
+
+h2 {
+	text-align: center;
+	animation-name: example;
+	animation-duration: 4s;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
+	animation-timing-function: ease-in-out;
 }
 
