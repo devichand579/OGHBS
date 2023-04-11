@@ -183,8 +183,8 @@ def AddBaseAdmin():
     for i in range(100):
         st=st+'0'
     
-    rooms = [Rooms(id=1, floor=0, roomtype="D/B AC Rooms", description="Double Bed", status=st, ghId=0, pricePerDay=1000, occupancy=2, ac=1),
-                Rooms(id=2, floor=0, roomtype="D/B NON AC Rooms", description="Double Bed", status=st, ghId=0, pricePerDay=800, occupancy=2, ac=0),
+    rooms = [Rooms(id=1, floor=0, roomtype="D/B NON AC Rooms", description="Double Bed", status=st, ghId=0, pricePerDay=800, occupancy=2, ac=1),
+                Rooms(id=2, floor=0, roomtype="D/B AC Rooms", description="Double Bed", status=st, ghId=0, pricePerDay=1000, occupancy=2, ac=0),
                 Rooms(id=3, floor=1, roomtype="Suite Rooms", description="Single Bed", status=st, ghId=0, pricePerDay=2000, occupancy=2, ac=0),
                 Rooms(id=4, floor=2, roomtype="Meeting Room", description="for meeting", status=st, ghId=0, pricePerDay=5000, occupancy=10, ac=1),
                 Rooms(id=5, floor=0, roomtype="D/B AC Rooms", description="Double Bed", status=st, ghId=2, pricePerDay=600, occupancy=3, ac=1),
