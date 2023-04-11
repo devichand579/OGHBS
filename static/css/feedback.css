@@ -192,11 +192,11 @@ pre:empty::after {
 		var(--header-outer-height) - var(--header-inner-height)
 	);
 	--header-bg: #fff;
-  --bg-color: #e3e6f8;
-  --primary-color: #202f79;
+  --bg-color: #272936;
+  --primary-color: #ffffff;
   --secondary-color: #4454bb;
   --accent-color-1: #9aa7e4;
-  --accent-color-2: #fafcfe;
+  --accent-color-2: #007dfb;
 }
 
 .responsive-wrapper {
