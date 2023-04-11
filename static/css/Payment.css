@@ -31,7 +31,7 @@ span {
     display: flex;
     color: white;
     background-color: #9f71c3;
-    width: 50%;
+    width: 90%;
 	text-align: center;
     margin: 3rem auto;
     border: black 2px solid;
@@ -222,19 +222,4 @@ background-color:#4692e3
 	position: absolute;
 	bottom: -2px;
 	left: 0;
-}
-@keyframes example {
-	0%   {color: #46c6e3;}
-	25%  {color: #b3d844;}
-	50%  {color: #7667e8;}
-	100% {color: #e169c3;}
-}
-
-h2 {
-	text-align: center;
-	animation-name: example;
-	animation-duration: 4s;
-	animation-iteration-count: infinite;
-	animation-direction: alternate;
-	animation-timing-function: ease-in-out;
 }
