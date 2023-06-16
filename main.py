@@ -9,7 +9,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY']='KGPGH@123'
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///oghbs.db'
-db = SQLAlchemy(app)
+db = SQLAlchemy(app) 
 
 otpc=0
 res=""
@@ -229,12 +229,8 @@ def AddBaseAdmin():
         db.session.commit()
     admin = User(id=0, firstname="devichand",lastname="budagam", email="devichand579@gmail.com",username="devichand", password="Devichand@123", address="Bhadrachalam , Telangana", age=19, gender="Male", rollstd="GH001",usertype="Admin")
     val=Authentication(id=0,val=1)
-    user= User(id=1 , firstname="varsha", lastname="chepuri" , email="devichand579@gmail.com", username="varsha", password="Varsha@123", address="Guntur, Andhra Pradesh", age=19, gender="Female", rollstd="GH002", usertype="User")
-    valu=Authentication(id=1,val=1)
     db.session.add(admin)
     db.session.add(val)
-    db.session.add(user)
-    db.session.add(valu)
     db.session.commit()
 
 
